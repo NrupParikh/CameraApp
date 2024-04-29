@@ -62,6 +62,9 @@ dependencies {
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)
+    // Hilt
+    implementation(libs.androidx.hilt.navigation.fragment)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
