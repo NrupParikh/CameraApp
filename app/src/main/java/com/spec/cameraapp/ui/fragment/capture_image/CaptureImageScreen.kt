@@ -53,7 +53,7 @@ fun CaptureImageScreen() {
         Box {
             if (hasCameraPermission.value) {
                 // Your camera composable or screen
-                Text(text = "CAMERA IS NOW OPEN")
+                CameraPreviewScreen()
             } else {
                 // Your permission request explanation composable
                 Text(text = "ALLOW CAMERA PERMISSION FOR THIS FEATURE")
