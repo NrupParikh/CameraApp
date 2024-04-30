@@ -63,9 +63,12 @@ dependencies {
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)
     // Hilt
-
     implementation (libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // Accompanist
+
+    implementation (libs.accompanist.permissions)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
