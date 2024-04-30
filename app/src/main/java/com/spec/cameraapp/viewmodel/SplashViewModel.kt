@@ -2,6 +2,7 @@ package com.spec.cameraapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.spec.cameraapp.ui.utils.SPLASH_SCREEN_TIME_OUT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ class SplashViewModel @Inject constructor() : ViewModel() {
 
     init {
         viewModelScope.launch {
-            delay(2000)
+            delay(SPLASH_SCREEN_TIME_OUT)
             splashScreenFlow.value = false
         }
     }

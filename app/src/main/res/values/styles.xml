@@ -2,7 +2,7 @@
 
     <style name="MainActivityTheme.Starting" parent="Theme.SplashScreen">
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
-        <item name="postSplashScreenTheme">@android:style/Theme.DeviceDefault</item>
+        <item name="postSplashScreenTheme">@style/Theme.CameraApp</item>
         <item name="android:windowSplashScreenBrandingImage">@drawable/ic_brand_name</item>
     </style>
 </resources>
