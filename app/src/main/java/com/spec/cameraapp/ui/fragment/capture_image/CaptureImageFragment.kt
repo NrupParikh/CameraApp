@@ -7,8 +7,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.spec.cameraapp.ui.theme.CameraAppTheme
 
 @Composable
-fun CaptureImageFragment() {
-    CaptureImageScreen()
+fun CaptureImageFragment(
+    onClickToCaptureImage: () -> Unit = {}
+) {
+    CaptureImageScreen(onClickToCaptureImage = onClickToCaptureImage)
 }
 
 @SuppressLint("UnrememberedMutableState")

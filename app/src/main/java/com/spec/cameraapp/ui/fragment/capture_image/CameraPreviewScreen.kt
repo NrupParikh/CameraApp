@@ -44,12 +44,14 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Composable
-fun CameraPreviewScreen() {
+fun CameraPreviewScreen(onClickToCaptureImage: () -> Unit = {}) {
 
     // ================== TOGGLE CAMERA
     val toggleCamera = remember { mutableStateOf(false) }
 
     // ================== PICKER
+    // content://media/picker/0/com.android.providers.media.photopicker/media/1000058380
+
     var photoUri: Uri? by remember { mutableStateOf(null) }
 
     val launcher =
@@ -58,7 +60,10 @@ fun CameraPreviewScreen() {
         }
 
     if (photoUri != null) {
+
+        Log.d("TAG","GalleryImagePath ${photoUri.toString()}")
         Toast.makeText(LocalContext.current, photoUri.toString(), Toast.LENGTH_LONG).show()
+        onClickToCaptureImage()
     }
     // =================== END OF PICKER
 
@@ -104,14 +109,18 @@ fun CameraPreviewScreen() {
 
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
-        BottomButtonUI(imageCapture, context, launcher, toggleCamera)
+        BottomButtonUI(imageCapture, context, launcher, toggleCamera, onClickToCaptureImage)
     }
 
 
 }
 
 // ===================== STORE IMAGE TO INTERNAL STORAGE
-private fun captureImage(imageCapture: ImageCapture, context: Context) {
+private fun captureImage(
+    imageCapture: ImageCapture,
+    context: Context,
+    onClickToCaptureImage: () -> Unit = {}
+) {
 
     val name = "CameraxImage.jpeg"
     val contentValues = ContentValues().apply {
@@ -128,6 +137,8 @@ private fun captureImage(imageCapture: ImageCapture, context: Context) {
         .build()
 
     // ============================ SAVE IMAGE
+    // content://media/external/images/media/1000058790
+
     imageCapture.takePicture(
         outputOptions,
         ContextCompat.getMainExecutor(context),
@@ -137,6 +148,7 @@ private fun captureImage(imageCapture: ImageCapture, context: Context) {
                 Log.d("TAG", "SUCCESS $storedImagePath")
                 Toast.makeText(context, "Image stored at $storedImagePath", Toast.LENGTH_LONG)
                     .show()
+                onClickToCaptureImage()
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -164,7 +176,8 @@ fun BottomButtonUI(
     imageCapture: ImageCapture,
     context: Context,
     launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
-    toggleCamera: MutableState<Boolean>
+    toggleCamera: MutableState<Boolean>,
+    onClickToCaptureImage: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -180,7 +193,6 @@ fun BottomButtonUI(
 
             CircularImageButton(
                 onClick = {
-
                     launcher.launch(
                         PickVisualMediaRequest(
                             mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
@@ -193,7 +205,7 @@ fun BottomButtonUI(
             )
 
             CircularImageButton(
-                onClick = { captureImage(imageCapture, context) },
+                onClick = { captureImage(imageCapture, context, onClickToCaptureImage) },
                 fillColor = Color.White,
                 modifier = Modifier.size(72.dp),
                 hasIcon = false
@@ -202,7 +214,6 @@ fun BottomButtonUI(
             CircularImageButton(
                 onClick = {
                     toggleCamera.value = !toggleCamera.value
-                    Toast.makeText(context, toggleCamera.value.toString(), Toast.LENGTH_LONG).show()
                 },
                 fillColor = Color.Black,
                 modifier = Modifier.size(64.dp),

@@ -20,7 +20,7 @@ import com.spec.cameraapp.ui.theme.CameraAppTheme
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CaptureImageScreen() {
+fun CaptureImageScreen(onClickToCaptureImage: () -> Unit = {}) {
 
     val hasCameraPermission = remember { mutableStateOf(false) }
 
@@ -53,7 +53,7 @@ fun CaptureImageScreen() {
         Box {
             if (hasCameraPermission.value) {
                 // Your camera composable or screen
-                CameraPreviewScreen()
+                CameraPreviewScreen(onClickToCaptureImage)
             } else {
                 // Your permission request explanation composable
                 Text(text = "ALLOW CAMERA PERMISSION FOR THIS FEATURE")

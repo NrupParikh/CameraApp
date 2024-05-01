@@ -1,7 +1,11 @@
 package com.spec.cameraapp.ui.topbar
 
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -10,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import com.spec.cameraapp.ui.components.currentRoute
+import com.spec.cameraapp.ui.navigation.Route
 import com.spec.cameraapp.ui.utils.getScreenNameFromRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +39,18 @@ fun MyTopAppBar(navController: NavController) {
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
             actionIconContentColor = MaterialTheme.colorScheme.onSecondary
         ),
+        navigationIcon = {
+            if (!currentRoute.equals(Route.Home.route)) {
+                IconButton(onClick = {
+                    navController.navigateUp()
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack, contentDescription = "",
+                        tint = MaterialTheme.colorScheme.inversePrimary
+                    )
+                }
+            }
+        }
     )
 
 }

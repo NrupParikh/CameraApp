@@ -6,7 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.spec.cameraapp.ui.fragment.capture_image.CaptureImageFragment
 import com.spec.cameraapp.ui.fragment.home.HomeFragment
+import com.spec.cameraapp.ui.fragment.image_editing.ImageEditingScreen
 import com.spec.cameraapp.ui.utils.ROUTE_CAPTURE_IMAGE
+import com.spec.cameraapp.ui.utils.ROUTE_IMAGE_EDIT
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
@@ -20,7 +22,12 @@ fun NavigationGraph(navController: NavHostController) {
             }
         }
         composable(route = Route.CaptureImage.route) {
-            CaptureImageFragment()
+            CaptureImageFragment() {
+                navController.navigate(route = ROUTE_IMAGE_EDIT)
+            }
+        }
+        composable(route = Route.EditImage.route) {
+            ImageEditingScreen()
         }
     }
 }
