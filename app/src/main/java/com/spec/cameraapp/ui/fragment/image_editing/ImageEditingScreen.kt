@@ -1,7 +1,5 @@
 package com.spec.cameraapp.ui.fragment.image_editing
 
-import android.annotation.SuppressLint
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -16,18 +14,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.spec.cameraapp.ui.theme.CameraAppTheme
-import com.spec.cameraapp.ui.utils.LBL_EDIT_IMAGE
+import com.spec.cameraapp.R
+import com.spec.cameraapp.viewmodels.MainViewModel
+
+/*
+*  In this Image Editing Screen we can do below functionality
+*   - Display Captured Image or selected image
+*   - Perform filtering
+* */
 
 @Composable
-fun ImageEditingScreen() {
+fun ImageEditingScreen(mainViewModel: MainViewModel) {
 
     val photoUri = "content://media/external/images/media/1000058790"
 //    val photoUri = "content://media/picker/0/com.android.providers.media.photopicker/media/1000058380"
+
 
     val painter = rememberAsyncImagePainter(
         ImageRequest
@@ -51,15 +56,6 @@ fun ImageEditingScreen() {
             contentScale = ContentScale.Crop
         )
 
-        Text(text = LBL_EDIT_IMAGE)
-    }
-}
-
-@SuppressLint("UnrememberedMutableState")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun ImageEditingScreenPreview() {
-    CameraAppTheme {
-        ImageEditingScreen()
+        Text(text = stringResource(id = R.string.lbl_edit_image_here))
     }
 }

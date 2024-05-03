@@ -6,9 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.spec.cameraapp.ui.theme.CameraAppTheme
-import com.spec.cameraapp.viewmodel.SplashViewModel
+import com.spec.cameraapp.viewmodels.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+/*
+*  In this Main Activity we can do below functionality
+    - Show Splash Screen using Splash API
+    - Define the Main Screen
+* */
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

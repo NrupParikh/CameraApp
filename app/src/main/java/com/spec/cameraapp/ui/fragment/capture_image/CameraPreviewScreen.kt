@@ -39,12 +39,25 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import com.spec.cameraapp.db.table.Project
 import com.spec.cameraapp.ui.components.CircularImageButton
+import com.spec.cameraapp.viewmodels.MainViewModel
+import java.time.Instant
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+/*
+*  In this Capture Preview Screen we can do below functionality
+*   - Capture Image : Save Image in Database Table (Project)
+*   - Open the Gallery : Select image from picker and save
+*   - Toggle the camera Front and Back
+*   - After Image caption done, we move to Edit Image Screen
+* */
+
 @Composable
-fun CameraPreviewScreen(onClickToCaptureImage: () -> Unit = {}) {
+fun CameraPreviewScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -> Unit = {}) {
 
     // ================== TOGGLE CAMERA
     val toggleCamera = remember { mutableStateOf(false) }
@@ -61,7 +74,8 @@ fun CameraPreviewScreen(onClickToCaptureImage: () -> Unit = {}) {
 
     if (photoUri != null) {
 
-        Log.d("TAG","GalleryImagePath ${photoUri.toString()}")
+        Log.d("TAG", "GalleryImagePath ${photoUri.toString()}")
+        storeImagePathInDB(mainViewModel, photoUri.toString())
         Toast.makeText(LocalContext.current, photoUri.toString(), Toast.LENGTH_LONG).show()
         onClickToCaptureImage()
     }
@@ -109,7 +123,14 @@ fun CameraPreviewScreen(onClickToCaptureImage: () -> Unit = {}) {
 
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
-        BottomButtonUI(imageCapture, context, launcher, toggleCamera, onClickToCaptureImage)
+        BottomButtonUI(
+            context,
+            imageCapture,
+            launcher,
+            toggleCamera,
+            mainViewModel,
+            onClickToCaptureImage
+        )
     }
 
 
@@ -119,6 +140,7 @@ fun CameraPreviewScreen(onClickToCaptureImage: () -> Unit = {}) {
 private fun captureImage(
     imageCapture: ImageCapture,
     context: Context,
+    mainViewModel: MainViewModel,
     onClickToCaptureImage: () -> Unit = {}
 ) {
 
@@ -136,8 +158,6 @@ private fun captureImage(
         )
         .build()
 
-    // ============================ SAVE IMAGE
-    // content://media/external/images/media/1000058790
 
     imageCapture.takePicture(
         outputOptions,
@@ -146,9 +166,17 @@ private fun captureImage(
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 val storedImagePath = outputFileResults.savedUri.toString()
                 Log.d("TAG", "SUCCESS $storedImagePath")
-                Toast.makeText(context, "Image stored at $storedImagePath", Toast.LENGTH_LONG)
+
+                storeImagePathInDB(mainViewModel, storedImagePath)
+                Toast.makeText(
+                    context,
+                    "Image stored at $storedImagePath",
+                    Toast.LENGTH_LONG
+                )
                     .show()
+                // Navigate to Captured Image Screen
                 onClickToCaptureImage()
+
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -173,10 +201,11 @@ private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
 
 @Composable
 fun BottomButtonUI(
-    imageCapture: ImageCapture,
     context: Context,
+    imageCapture: ImageCapture,
     launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     toggleCamera: MutableState<Boolean>,
+    mainViewModel: MainViewModel,
     onClickToCaptureImage: () -> Unit = {}
 ) {
     Box(
@@ -205,7 +234,14 @@ fun BottomButtonUI(
             )
 
             CircularImageButton(
-                onClick = { captureImage(imageCapture, context, onClickToCaptureImage) },
+                onClick = {
+                    captureImage(
+                        imageCapture,
+                        context,
+                        mainViewModel,
+                        onClickToCaptureImage
+                    )
+                },
                 fillColor = Color.White,
                 modifier = Modifier.size(72.dp),
                 hasIcon = false
@@ -221,4 +257,19 @@ fun BottomButtonUI(
             )
         }
     }
+}
+
+// ============== STORE IMAGE PATH IN DATABASE
+// content://media/external/images/media/1000058790
+// /Internal Storage/Pictures/CameraX-Image/CameraxImage.jpeg
+
+fun storeImagePathInDB(mainViewModel: MainViewModel, path: String) {
+    val currentTime = Instant.now()
+    mainViewModel.createNewProject(
+        Project(
+            id = currentTime.toEpochMilli().toInt(),
+            imageUrl = path,
+            createdAt = currentTime.toString()
+        )
+    )
 }

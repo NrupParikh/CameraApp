@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id ("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -63,11 +65,9 @@ dependencies {
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)
     // Hilt
-    implementation (libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
-
+//    implementation (libs.androidx.navigation.compose)
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     // Accompanist
-
     implementation (libs.accompanist.permissions)
 
     // Camera
@@ -79,6 +79,22 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
+    // Room
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.6")
+    annotationProcessor ("androidx.room:room-compiler:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
+
+    //Dagger-Hilt
+    implementation ("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
+
+    // ViewModel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,4 +102,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+kapt{
+    correctErrorTypes = true
 }

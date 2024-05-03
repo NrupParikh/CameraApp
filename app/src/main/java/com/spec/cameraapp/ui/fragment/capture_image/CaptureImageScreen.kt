@@ -13,14 +13,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
-import com.spec.cameraapp.ui.theme.CameraAppTheme
+import com.spec.cameraapp.viewmodels.MainViewModel
+
+/*
+*  In this Capture Image Screen we can do below functionality
+*   - Ask for Camera Permission
+*   - Open the Camera Preview Screen
+* */
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CaptureImageScreen(onClickToCaptureImage: () -> Unit = {}) {
+fun CaptureImageScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -> Unit = {}) {
 
     val hasCameraPermission = remember { mutableStateOf(false) }
 
@@ -53,19 +58,11 @@ fun CaptureImageScreen(onClickToCaptureImage: () -> Unit = {}) {
         Box {
             if (hasCameraPermission.value) {
                 // Your camera composable or screen
-                CameraPreviewScreen(onClickToCaptureImage)
+                CameraPreviewScreen(mainViewModel, onClickToCaptureImage)
             } else {
                 // Your permission request explanation composable
                 Text(text = "ALLOW CAMERA PERMISSION FOR THIS FEATURE")
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CaptureImageScreenPreview() {
-    CameraAppTheme {
-        CaptureImageScreen()
     }
 }

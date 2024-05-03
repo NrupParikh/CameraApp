@@ -1,4 +1,4 @@
-package com.spec.cameraapp.viewmodel
+package com.spec.cameraapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
