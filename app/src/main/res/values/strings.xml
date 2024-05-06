@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Camera App</string>
+    <string name="title_home">Home</string>
+    <string name="title_capture_image">Capture Image</string>
+    <string name="title_edit_image">Edit Image</string>
+    <string name="lbl_create_new_project">Create New Project</string>
+    <string name="lbl_edit_image_here">Edit your Image here</string>
+
+    <string name="lbl_project_id">Project Id : %d</string>
+    <string name="lbl_created_at">Created At : %s</string>
 </resources>
