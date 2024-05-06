@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.spec.cameraapp.viewmodels.MainViewModel
@@ -25,7 +26,10 @@ import com.spec.cameraapp.viewmodels.MainViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CaptureImageScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -> Unit = {}) {
+fun CaptureImageScreen(
+    mainViewModel: MainViewModel,
+    navController: NavHostController,
+) {
 
     val hasCameraPermission = remember { mutableStateOf(false) }
 
@@ -58,7 +62,7 @@ fun CaptureImageScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -
         Box {
             if (hasCameraPermission.value) {
                 // Your camera composable or screen
-                CameraPreviewScreen(mainViewModel, onClickToCaptureImage)
+                CameraPreviewScreen(mainViewModel, navController)
             } else {
                 // Your permission request explanation composable
                 Text(text = "ALLOW CAMERA PERMISSION FOR THIS FEATURE")

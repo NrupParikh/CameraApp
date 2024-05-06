@@ -14,17 +14,21 @@ import coil.transform.Transformation
 fun LoadImageFromUri(
     context: Context,
     imageUri: String,
-    transformation: Transformation,
+    transformation: Transformation?,
     imageSize: Dp,
     scaleType: ContentScale
 
 ) {
     val imageRequest = ImageRequest.Builder(context = context).data(
         imageUri
-    ).transformations(transformation).build()
+    )
 
     AsyncImage(
-        model = imageRequest,
+        model = if (transformation != null) {
+            imageRequest.transformations(transformation).build()
+        } else {
+            imageRequest.build()
+        },
         contentDescription = "Image Description",
         modifier = Modifier.size(imageSize),
         contentScale = scaleType,

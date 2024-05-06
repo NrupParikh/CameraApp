@@ -1,7 +1,7 @@
 package com.spec.cameraapp.ui.fragment.home
 
 import android.util.Log
-import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,10 +26,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.transform.CircleCropTransformation
 import com.spec.cameraapp.R
 import com.spec.cameraapp.db.table.Project
 import com.spec.cameraapp.ui.components.LoadImageFromUri
+import com.spec.cameraapp.ui.navigation.Route
 import com.spec.cameraapp.viewmodels.MainViewModel
 
 /*
@@ -39,8 +41,10 @@ import com.spec.cameraapp.viewmodels.MainViewModel
 * */
 
 @Composable
-fun HomeScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -> Unit = {}) {
-
+fun HomeScreen(
+    mainViewModel: MainViewModel,
+    navController: NavHostController
+) {
 
     mainViewModel.getAllProjects()
     val lazyListState = rememberLazyListState()
@@ -52,7 +56,9 @@ fun HomeScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -> Unit =
     ) {
 
         Spacer(modifier = Modifier.padding(16.dp))
-        ElevatedButton(onClick = onClickToCaptureImage) {
+        ElevatedButton(onClick = {
+            navController.navigate(route = Route.CaptureImage.route)
+        }) {
             Text(text = stringResource(id = R.string.lbl_create_new_project))
         }
 
@@ -67,12 +73,9 @@ fun HomeScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -> Unit =
             ) {
                 items(items = projectList) { project ->
                     ProjectItem(project = project, onItemClick = { selectedProject ->
-                        Log.d("TAG", selectedProject.imageUrl)
-                        Toast.makeText(
-                            LocalContext.current,
-                            selectedProject.imageUrl,
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Log.d("TAG", "Selected ImageURL " + selectedProject.imageUrl)
+                        mainViewModel.imageUrl.value = selectedProject.imageUrl
+                        navController.navigate(route = Route.EditImage.route)
                     })
                 }
             }
@@ -81,11 +84,14 @@ fun HomeScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -> Unit =
 }
 
 @Composable
-fun ProjectItem(project: Project, onItemClick: @Composable (Project) -> Unit) {
+fun ProjectItem(project: Project, onItemClick: (Project) -> Unit) {
     Card(
         modifier = Modifier
             .padding(10.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(onClick = {
+                onItemClick.invoke(project)
+            }),
         shape = RoundedCornerShape(10.dp),
     ) {
 
