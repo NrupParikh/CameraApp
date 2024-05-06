@@ -1,5 +1,7 @@
 package com.spec.cameraapp.ui.fragment.home
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,53 +66,65 @@ fun HomeScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -> Unit =
                 state = lazyListState
             ) {
                 items(items = projectList) { project ->
-                    Card(
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp),
-                    ) {
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            // ==================== LOAD IMAGE USING COIL
-
-                            LoadImageFromUri(
-                                context = LocalContext.current,
-                                imageUri = project.imageUrl,
-                                transformation = CircleCropTransformation(),
-                                imageSize = 64.dp,
-                                scaleType = ContentScale.Crop
-                            )
-
-                            // ========== Content
-
-                            Column {
-                                Text(
-                                    text = String.format(
-                                        stringResource(id = R.string.lbl_project_id),
-                                        project.id
-                                    ),
-                                    modifier = Modifier.padding(8.dp),
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = String.format(
-                                        stringResource(id = R.string.lbl_created_at),
-                                        project.createdAt
-                                    ),
-                                    modifier = Modifier.padding(8.dp),
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
+                    ProjectItem(project = project, onItemClick = { selectedProject ->
+                        Log.d("TAG", selectedProject.imageUrl)
+                        Toast.makeText(
+                            LocalContext.current,
+                            selectedProject.imageUrl,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    })
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProjectItem(project: Project, onItemClick: @Composable (Project) -> Unit) {
+    Card(
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp),
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            // ==================== LOAD IMAGE USING COIL
+
+            LoadImageFromUri(
+                context = LocalContext.current,
+                imageUri = project.imageUrl,
+                transformation = CircleCropTransformation(),
+                imageSize = 64.dp,
+                scaleType = ContentScale.Crop
+            )
+
+            // ========== Content
+
+            Column {
+                Text(
+                    text = String.format(
+                        stringResource(id = R.string.lbl_project_id),
+                        project.id
+                    ),
+                    modifier = Modifier.padding(8.dp),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = String.format(
+                        stringResource(id = R.string.lbl_created_at),
+                        project.createdAt
+                    ),
+                    modifier = Modifier.padding(8.dp),
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
