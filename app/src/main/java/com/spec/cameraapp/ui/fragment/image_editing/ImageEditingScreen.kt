@@ -2,9 +2,14 @@ package com.spec.cameraapp.ui.fragment.image_editing
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -13,7 +18,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.spec.cameraapp.R
+import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
+import com.spec.cameraapp.ui.utils.transformations.TransformationItem
 import com.spec.cameraapp.viewmodels.MainViewModel
 
 /*
@@ -38,16 +46,66 @@ fun ImageEditingScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        LoadImageFromUri(
-            context = LocalContext.current,
-            imageUri = photoUri.value,
-            transformation = null,
-            imageSize = 500.dp,
-            scaleType = ContentScale.Crop
-        )
+        // transformation = RoundedCornersTransformation(50f),
+        // transformation = CircleCropTransformation(), // Also adjust the imageSize
+        // transformation = SquareCropTransformation(),
+        // transformation = BlurTransformation(context = LocalContext.current, 20f),
+        // transformation = GrayscaleTransformation(),
+        // transformation = ColorFilterTransformation(ColorUtils.setAlphaComponent(Color.GREEN,50)),
+        // transformation = MaskTransformation(context = LocalContext.current,R.drawable.ic_splash)
+
+        Box(
+            modifier = Modifier.weight(1f)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                LoadImageFromUri(
+                    context = LocalContext.current,
+                    imageUri = photoUri.value,
+                    transformation = null,
+                    imageSize = 500.dp,
+                    scaleType = ContentScale.Crop
+                )
+            }
+        }
+
+        TransformationBox()
+    }
+}
+
+
+@Composable
+fun TransformationBox() {
+    val lazyListState = rememberLazyListState()
+
+    // List of Transformations
+    val transformationList: List<TransformationItem> = mutableListOf(
+        TransformationItem(id = 1, icon = R.drawable.ic_rounded_corner),
+        TransformationItem(id = 2, icon = R.drawable.ic_circle_crop),
+        TransformationItem(id = 3, icon = R.drawable.ic_sqaure_crop),
+        TransformationItem(id = 4, icon = R.drawable.ic_blure),
+        TransformationItem(id = 5, icon = R.drawable.ic_gray_scale),
+        TransformationItem(id = 6, icon = R.drawable.ic_color_filter),
+        TransformationItem(id = 7, icon = R.drawable.ic_mask),
+    )
+
+    LazyRow(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        state = lazyListState
+    ) {
+        items(items = transformationList) { transformation ->
+            ImageTransformationItem(transformation)
+        }
     }
 }
