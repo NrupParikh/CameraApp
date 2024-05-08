@@ -1,7 +1,12 @@
 package com.spec.cameraapp.ui.fragment.home
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.clickable
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -31,6 +39,8 @@ import coil.transform.CircleCropTransformation
 import com.spec.cameraapp.R
 import com.spec.cameraapp.db.table.Project
 import com.spec.cameraapp.ui.components.LoadImageFromUri
+import com.spec.cameraapp.ui.components.SelectImagePopUp
+import com.spec.cameraapp.ui.fragment.capture_image.storeImagePathInDB
 import com.spec.cameraapp.ui.navigation.Route
 import com.spec.cameraapp.viewmodels.MainViewModel
 
@@ -49,6 +59,25 @@ fun HomeScreen(
     mainViewModel.getAllProjects()
     val lazyListState = rememberLazyListState()
 
+    var showDialog by remember { mutableStateOf(false) }
+    var photoUri: Uri? by remember { mutableStateOf(null) }
+
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            photoUri = uri
+        }
+    if (photoUri != null) {
+
+        Log.d("TAG", "GalleryImagePath111 ${photoUri.toString()}")
+        storeImagePathInDB(mainViewModel, photoUri.toString())
+        Toast.makeText(LocalContext.current, photoUri.toString(), Toast.LENGTH_LONG).show()
+        mainViewModel.imageUrl.value = photoUri.toString()
+        navController.navigate(route = Route.EditImage.route)
+        photoUri=null
+
+    }
+
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -56,15 +85,29 @@ fun HomeScreen(
     ) {
 
         Spacer(modifier = Modifier.padding(16.dp))
-        ElevatedButton(onClick = {
-            navController.navigate(route = Route.CaptureImage.route)
-        }) {
+        ElevatedButton(onClick = { showDialog = true }) {
             Text(text = stringResource(id = R.string.lbl_create_new_project))
         }
 
+        SelectImagePopUp(
+            showDialog = showDialog,
+            onDismiss = { showDialog = false },
+            onClickCamera = {
+                navController.navigate(route = Route.CaptureImage.route)
+                            },
+            onClickGallery = {
+                launcher.launch(
+                    PickVisualMediaRequest(
+                        mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+            },
+        )
+
         // ========== Fetch Project List from Database and show on List
 
-        val projectList: List<Project> by mainViewModel.projectList.observeAsState(initial = listOf())
+        val projectListDecending: List<Project> by mainViewModel.projectList.observeAsState(initial = listOf())
+        val projectList=projectListDecending.reversed()
         if (projectList.isNotEmpty()) {
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -82,6 +125,8 @@ fun HomeScreen(
         }
     }
 }
+
+
 
 @Composable
 fun ProjectItem(project: Project, onItemClick: (Project) -> Unit) {
