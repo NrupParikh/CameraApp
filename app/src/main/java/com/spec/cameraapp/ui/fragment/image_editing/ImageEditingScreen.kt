@@ -2,7 +2,6 @@ package com.spec.cameraapp.ui.fragment.image_editing
 
 import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,10 +18,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.ColorUtils
 import androidx.navigation.NavHostController
+import coil.transform.CircleCropTransformation
+import coil.transform.RoundedCornersTransformation
+import coil.transform.Transformation
 import com.spec.cameraapp.R
 import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
+import com.spec.cameraapp.ui.utils.transformations.BlurTransformation
+import com.spec.cameraapp.ui.utils.transformations.ColorFilterTransformation
+import com.spec.cameraapp.ui.utils.transformations.GrayscaleTransformation
+import com.spec.cameraapp.ui.utils.transformations.MaskTransformation
+import com.spec.cameraapp.ui.utils.transformations.SquareCropTransformation
 import com.spec.cameraapp.ui.utils.transformations.TransformationItem
 import com.spec.cameraapp.ui.utils.transformations.TransformationType
 import com.spec.cameraapp.viewmodels.MainViewModel
@@ -40,6 +48,8 @@ fun ImageEditingScreen(
 ) {
 
     val photoUri = mainViewModel.imageUrl.observeAsState(initial = "")
+    val selectedTransformation = mainViewModel.selectedTransformation.observeAsState()
+
     Log.d("TAG", "DURL $photoUri")
 
 //    val photoUri = "content://media/external/images/media/1000060027"
@@ -69,24 +79,53 @@ fun ImageEditingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+
+                var transformation: Transformation? = null
+                val transformationValue = selectedTransformation.value
+                when (transformationValue) {
+                    TransformationType.ROUNDED_CORNER.name -> transformation =
+                        RoundedCornersTransformation(50f)
+
+                    TransformationType.CIRCLE_CROP.name -> transformation =
+                        CircleCropTransformation()
+
+                    TransformationType.SQUARE_CROP.name -> transformation =
+                        SquareCropTransformation()
+
+                    TransformationType.BLUR.name -> transformation =
+                        BlurTransformation(context = LocalContext.current, 20f)
+
+
+                    TransformationType.GRAY_SCALE.name -> transformation =
+                        GrayscaleTransformation()
+
+                    TransformationType.COLOR_FILTER.name -> transformation =
+                        ColorFilterTransformation(
+                            ColorUtils.setAlphaComponent(android.graphics.Color.MAGENTA, 80)
+                        )
+
+                    TransformationType.MASK.name -> transformation =
+                        MaskTransformation(context = LocalContext.current, R.drawable.ic_splash)
+                }
+
                 LoadImageFromUri(
                     context = LocalContext.current,
                     imageUri = photoUri.value,
-                    transformation = null,
+                    transformation = transformation,
                     imageSize = 500.dp,
                     scaleType = ContentScale.Crop
                 )
             }
         }
 
-        TransformationBox()
+        TransformationBox(mainViewModel)
     }
 }
 
 
 @SuppressLint("LogNotTimber")
 @Composable
-fun TransformationBox() {
+fun TransformationBox(mainViewModel: MainViewModel) {
     val lazyListState = rememberLazyListState()
 
     // List of Transformations
@@ -137,6 +176,7 @@ fun TransformationBox() {
     ) {
         items(items = transformationList) { transformation ->
             ImageTransformationItem(transformation, onItemClick = { selectedTransformation ->
+                mainViewModel.selectedTransformation.value = selectedTransformation.type
                 Log.d("TAG", "Selected Transformation " + selectedTransformation.type)
             })
         }

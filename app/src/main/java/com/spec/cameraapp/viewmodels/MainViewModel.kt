@@ -17,6 +17,7 @@ class MainViewModel @Inject constructor(private val projectRepository: ProjectRe
 
     val projectList = MutableLiveData<List<Project>>()
     val imageUrl = MutableLiveData<String>()
+    val selectedTransformation = MutableLiveData<String>()
 
     init {
         getAllProjects()
