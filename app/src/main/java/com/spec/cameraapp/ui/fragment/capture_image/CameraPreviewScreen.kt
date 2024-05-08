@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import com.spec.cameraapp.db.table.Project
 import com.spec.cameraapp.ui.components.CircularImageButton
 import com.spec.cameraapp.ui.navigation.Route
@@ -179,7 +180,10 @@ private fun captureImage(
                 )
                     .show()
                 // Navigate to Captured Image Screen
-//                navController.navigate(Route.EditImage.route)
+                mainViewModel.imageUrl.value = storedImagePath.toString()
+                navController.popBackStack()
+                navController.navigate(Route.EditImage.route)
+
 
             }
 
