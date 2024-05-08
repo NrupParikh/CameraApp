@@ -1,6 +1,7 @@
 package com.spec.cameraapp.ui.fragment.image_editing
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,13 +27,13 @@ import coil.transform.Transformation
 import com.spec.cameraapp.R
 import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
-import com.spec.cameraapp.ui.utils.transformations.BlurTransformation
-import com.spec.cameraapp.ui.utils.transformations.ColorFilterTransformation
-import com.spec.cameraapp.ui.utils.transformations.GrayscaleTransformation
-import com.spec.cameraapp.ui.utils.transformations.MaskTransformation
-import com.spec.cameraapp.ui.utils.transformations.SquareCropTransformation
-import com.spec.cameraapp.ui.utils.transformations.TransformationItem
-import com.spec.cameraapp.ui.utils.transformations.TransformationType
+import com.spec.cameraapp.utils.transformations.BlurTransformation
+import com.spec.cameraapp.utils.transformations.ColorFilterTransformation
+import com.spec.cameraapp.utils.transformations.GrayscaleTransformation
+import com.spec.cameraapp.utils.transformations.MaskTransformation
+import com.spec.cameraapp.utils.transformations.SquareCropTransformation
+import com.spec.cameraapp.utils.transformations.TransformationItem
+import com.spec.cameraapp.utils.transformations.TransformationType
 import com.spec.cameraapp.viewmodels.MainViewModel
 
 /*
@@ -101,7 +102,7 @@ fun ImageEditingScreen(
 
                     TransformationType.COLOR_FILTER.name -> transformation =
                         ColorFilterTransformation(
-                            ColorUtils.setAlphaComponent(android.graphics.Color.MAGENTA, 80)
+                            ColorUtils.setAlphaComponent(Color.MAGENTA, 80)
                         )
 
                     TransformationType.MASK.name -> transformation =

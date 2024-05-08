@@ -2,7 +2,7 @@ package com.spec.cameraapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.spec.cameraapp.ui.utils.SPLASH_SCREEN_TIME_OUT
+import com.spec.cameraapp.utils.SPLASH_SCREEN_TIME_OUT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

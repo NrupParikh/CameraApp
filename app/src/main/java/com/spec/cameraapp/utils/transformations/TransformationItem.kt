@@ -1,4 +1,4 @@
-package com.spec.cameraapp.ui.utils.transformations
+package com.spec.cameraapp.utils.transformations
 
 data class TransformationItem(
     var id:Int,

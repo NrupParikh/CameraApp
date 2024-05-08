@@ -1,4 +1,4 @@
-package com.spec.cameraapp.ui.utils
+package com.spec.cameraapp.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

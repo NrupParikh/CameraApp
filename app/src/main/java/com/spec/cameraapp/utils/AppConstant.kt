@@ -1,4 +1,4 @@
-package com.spec.cameraapp.ui.utils
+package com.spec.cameraapp.utils
 
 const val DATABASE_NAME = "project_database"
 

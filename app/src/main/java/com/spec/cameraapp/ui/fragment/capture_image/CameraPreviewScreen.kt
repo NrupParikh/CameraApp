@@ -45,7 +45,7 @@ import androidx.navigation.NavOptions
 import com.spec.cameraapp.db.table.Project
 import com.spec.cameraapp.ui.components.CircularImageButton
 import com.spec.cameraapp.ui.navigation.Route
-import com.spec.cameraapp.ui.utils.ROUTE_IMAGE_EDIT
+import com.spec.cameraapp.utils.ROUTE_IMAGE_EDIT
 import com.spec.cameraapp.viewmodels.MainViewModel
 import java.time.Instant
 import kotlin.coroutines.resume
