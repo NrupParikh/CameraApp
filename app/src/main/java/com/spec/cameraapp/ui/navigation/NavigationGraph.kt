@@ -7,8 +7,6 @@ import androidx.navigation.compose.composable
 import com.spec.cameraapp.ui.fragment.capture_image.CaptureImageScreen
 import com.spec.cameraapp.ui.fragment.home.HomeScreen
 import com.spec.cameraapp.ui.fragment.image_editing.ImageEditingScreen
-import com.spec.cameraapp.ui.utils.ROUTE_CAPTURE_IMAGE
-import com.spec.cameraapp.ui.utils.ROUTE_IMAGE_EDIT
 import com.spec.cameraapp.viewmodels.MainViewModel
 
 /*
@@ -24,17 +22,13 @@ fun NavigationGraph(navController: NavHostController, mainViewModel: MainViewMod
         startDestination = Route.Home.route
     ) {
         composable(route = Route.Home.route) {
-            HomeScreen(mainViewModel) {
-                navController.navigate(route = ROUTE_CAPTURE_IMAGE)
-            }
+            HomeScreen(mainViewModel, navController)
         }
         composable(route = Route.CaptureImage.route) {
-            CaptureImageScreen(mainViewModel) {
-                navController.navigate(route = ROUTE_IMAGE_EDIT)
-            }
+            CaptureImageScreen(mainViewModel, navController)
         }
         composable(route = Route.EditImage.route) {
-            ImageEditingScreen(mainViewModel)
+            ImageEditingScreen(mainViewModel, navController)
         }
     }
 }

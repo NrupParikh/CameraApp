@@ -39,10 +39,11 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
+import androidx.navigation.NavHostController
 import com.spec.cameraapp.db.table.Project
 import com.spec.cameraapp.ui.components.CircularImageButton
+import com.spec.cameraapp.ui.navigation.Route
+import com.spec.cameraapp.ui.utils.ROUTE_IMAGE_EDIT
 import com.spec.cameraapp.viewmodels.MainViewModel
 import java.time.Instant
 import kotlin.coroutines.resume
@@ -57,7 +58,10 @@ import kotlin.coroutines.suspendCoroutine
 * */
 
 @Composable
-fun CameraPreviewScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () -> Unit = {}) {
+fun CameraPreviewScreen(
+    mainViewModel: MainViewModel,
+    navController: NavHostController
+) {
 
     // ================== TOGGLE CAMERA
     val toggleCamera = remember { mutableStateOf(false) }
@@ -77,7 +81,7 @@ fun CameraPreviewScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () 
         Log.d("TAG", "GalleryImagePath ${photoUri.toString()}")
         storeImagePathInDB(mainViewModel, photoUri.toString())
         Toast.makeText(LocalContext.current, photoUri.toString(), Toast.LENGTH_LONG).show()
-        onClickToCaptureImage()
+        navController.navigate(Route.EditImage.route)
     }
     // =================== END OF PICKER
 
@@ -129,7 +133,7 @@ fun CameraPreviewScreen(mainViewModel: MainViewModel, onClickToCaptureImage: () 
             launcher,
             toggleCamera,
             mainViewModel,
-            onClickToCaptureImage
+            navController
         )
     }
 
@@ -141,7 +145,7 @@ private fun captureImage(
     imageCapture: ImageCapture,
     context: Context,
     mainViewModel: MainViewModel,
-    onClickToCaptureImage: () -> Unit = {}
+    navController: NavHostController
 ) {
 
     val name = "CameraxImage.jpeg"
@@ -175,7 +179,7 @@ private fun captureImage(
                 )
                     .show()
                 // Navigate to Captured Image Screen
-                onClickToCaptureImage()
+//                navController.navigate(Route.EditImage.route)
 
             }
 
@@ -206,7 +210,7 @@ fun BottomButtonUI(
     launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     toggleCamera: MutableState<Boolean>,
     mainViewModel: MainViewModel,
-    onClickToCaptureImage: () -> Unit = {}
+    navController: NavHostController
 ) {
     Box(
         modifier = Modifier
@@ -239,7 +243,7 @@ fun BottomButtonUI(
                         imageCapture,
                         context,
                         mainViewModel,
-                        onClickToCaptureImage
+                        navController
                     )
                 },
                 fillColor = Color.White,
