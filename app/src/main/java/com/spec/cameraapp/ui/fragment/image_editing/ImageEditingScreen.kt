@@ -1,6 +1,8 @@
 package com.spec.cameraapp.ui.fragment.image_editing
 
+import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import com.spec.cameraapp.R
 import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
 import com.spec.cameraapp.ui.utils.transformations.TransformationItem
+import com.spec.cameraapp.ui.utils.transformations.TransformationType
 import com.spec.cameraapp.viewmodels.MainViewModel
 
 /*
@@ -81,19 +84,47 @@ fun ImageEditingScreen(
 }
 
 
+@SuppressLint("LogNotTimber")
 @Composable
 fun TransformationBox() {
     val lazyListState = rememberLazyListState()
 
     // List of Transformations
     val transformationList: List<TransformationItem> = mutableListOf(
-        TransformationItem(id = 1, icon = R.drawable.ic_rounded_corner),
-        TransformationItem(id = 2, icon = R.drawable.ic_circle_crop),
-        TransformationItem(id = 3, icon = R.drawable.ic_sqaure_crop),
-        TransformationItem(id = 4, icon = R.drawable.ic_blure),
-        TransformationItem(id = 5, icon = R.drawable.ic_gray_scale),
-        TransformationItem(id = 6, icon = R.drawable.ic_color_filter),
-        TransformationItem(id = 7, icon = R.drawable.ic_mask),
+        TransformationItem(
+            id = 1, icon = R.drawable.ic_rounded_corner,
+            TransformationType.ROUNDED_CORNER.name
+        ),
+        TransformationItem(
+            id = 2,
+            icon = R.drawable.ic_circle_crop,
+            TransformationType.CIRCLE_CROP.name
+        ),
+        TransformationItem(
+            id = 3,
+            icon = R.drawable.ic_sqaure_crop,
+            TransformationType.SQUARE_CROP.name
+        ),
+        TransformationItem(
+            id = 4,
+            icon = R.drawable.ic_blur,
+            TransformationType.BLUR.name
+        ),
+        TransformationItem(
+            id = 5,
+            icon = R.drawable.ic_gray_scale,
+            TransformationType.GRAY_SCALE.name
+        ),
+        TransformationItem(
+            id = 6,
+            icon = R.drawable.ic_color_filter,
+            TransformationType.COLOR_FILTER.name
+        ),
+        TransformationItem(
+            id = 7,
+            icon = R.drawable.ic_mask,
+            TransformationType.MASK.name
+        ),
     )
 
     LazyRow(
@@ -105,7 +136,9 @@ fun TransformationBox() {
         state = lazyListState
     ) {
         items(items = transformationList) { transformation ->
-            ImageTransformationItem(transformation)
+            ImageTransformationItem(transformation, onItemClick = { selectedTransformation ->
+                Log.d("TAG", "Selected Transformation " + selectedTransformation.type)
+            })
         }
     }
 }
