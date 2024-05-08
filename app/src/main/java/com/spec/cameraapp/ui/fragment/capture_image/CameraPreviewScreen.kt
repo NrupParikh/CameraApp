@@ -20,6 +20,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -67,25 +68,6 @@ fun CameraPreviewScreen(
     // ================== TOGGLE CAMERA
     val toggleCamera = remember { mutableStateOf(false) }
 
-    // ================== PICKER
-    // content://media/picker/0/com.android.providers.media.photopicker/media/1000058380
-
-    var photoUri: Uri? by remember { mutableStateOf(null) }
-
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            photoUri = uri
-        }
-
-    if (photoUri != null) {
-
-        Log.d("TAG", "GalleryImagePath ${photoUri.toString()}")
-        storeImagePathInDB(mainViewModel, photoUri.toString())
-        Toast.makeText(LocalContext.current, photoUri.toString(), Toast.LENGTH_LONG).show()
-        navController.navigate(Route.EditImage.route)
-    }
-    // =================== END OF PICKER
-
 
     // Change camera face Back or Front
     // val lensFacing = CameraSelector.LENS_FACING_BACK
@@ -131,7 +113,6 @@ fun CameraPreviewScreen(
         BottomButtonUI(
             context,
             imageCapture,
-            launcher,
             toggleCamera,
             mainViewModel,
             navController
@@ -211,7 +192,6 @@ private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
 fun BottomButtonUI(
     context: Context,
     imageCapture: ImageCapture,
-    launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     toggleCamera: MutableState<Boolean>,
     mainViewModel: MainViewModel,
     navController: NavHostController
@@ -228,41 +208,35 @@ fun BottomButtonUI(
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
 
-            CircularImageButton(
-                onClick = {
-                    launcher.launch(
-                        PickVisualMediaRequest(
-                            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+            Spacer(modifier = Modifier.weight(1f))
+
+            Box(modifier = Modifier.weight(1f)) {
+                CircularImageButton(
+                    onClick = {
+                        captureImage(
+                            imageCapture,
+                            context,
+                            mainViewModel,
+                            navController
                         )
-                    )
-                },
-                fillColor = Color.Black,
-                modifier = Modifier.size(64.dp),
-                hasIcon = false
-            )
+                    },
+                    fillColor = Color.White,
+                    modifier = Modifier.size(72.dp),
+                    hasIcon = false
+                )
+            }
 
-            CircularImageButton(
-                onClick = {
-                    captureImage(
-                        imageCapture,
-                        context,
-                        mainViewModel,
-                        navController
-                    )
-                },
-                fillColor = Color.White,
-                modifier = Modifier.size(72.dp),
-                hasIcon = false
-            )
+            Box(modifier = Modifier.weight(1f)) {
+                CircularImageButton(
+                    onClick = {
+                        toggleCamera.value = !toggleCamera.value
+                    },
+                    fillColor = Color.Black,
+                    modifier = Modifier.size(64.dp),
+                    hasIcon = true
+                )
+            }
 
-            CircularImageButton(
-                onClick = {
-                    toggleCamera.value = !toggleCamera.value
-                },
-                fillColor = Color.Black,
-                modifier = Modifier.size(64.dp),
-                hasIcon = true
-            )
         }
     }
 }
