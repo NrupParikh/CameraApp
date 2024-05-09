@@ -29,6 +29,11 @@ Welcome to the Camera App built with the power of Kotlin Jetpack Compose! This a
 
 That's it! You're ready to explore the world of stunning image capture and transformation with our Camera App powered by Jetpack Compose.
 
+### Screen Shots
+
+| Attempt | #1  | #2  |
+| ------- | --- | --- |
+| Seconds | 301 | 283 |
 
 ## License
 
