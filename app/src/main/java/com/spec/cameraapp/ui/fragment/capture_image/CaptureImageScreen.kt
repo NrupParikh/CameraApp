@@ -13,9 +13,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.spec.cameraapp.R
 import com.spec.cameraapp.viewmodels.MainViewModel
 
 /*
@@ -65,7 +67,7 @@ fun CaptureImageScreen(
                 CameraPreviewScreen(mainViewModel, navController)
             } else {
                 // Your permission request explanation composable
-                Text(text = "ALLOW CAMERA PERMISSION FOR THIS FEATURE")
+                Text(text = stringResource(id = R.string.lbl_allow_camera_permission))
             }
         }
     }

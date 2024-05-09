@@ -1,6 +1,5 @@
 package com.spec.cameraapp.ui.topbar
 
-import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,7 +21,6 @@ import com.spec.cameraapp.utils.getScreenNameFromRoute
 fun MyTopAppBar(navController: NavController) {
 
     val currentRoute = currentRoute(navController = navController)
-    Log.d("TAG", "currentRoute $currentRoute")
 
     TopAppBar(
         title = {

@@ -1,12 +1,12 @@
 package com.spec.cameraapp.ui.fragment.home
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.clickable
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -68,12 +69,11 @@ fun HomeScreen(
         }
     if (photoUri != null) {
 
-        Log.d("TAG", "GalleryImagePath111 ${photoUri.toString()}")
         storeImagePathInDB(mainViewModel, photoUri.toString())
         Toast.makeText(LocalContext.current, photoUri.toString(), Toast.LENGTH_LONG).show()
         mainViewModel.imageUrl.value = photoUri.toString()
         navController.navigate(route = Route.EditImage.route)
-        photoUri=null
+        photoUri = null
 
     }
 
@@ -89,12 +89,13 @@ fun HomeScreen(
             Text(text = stringResource(id = R.string.lbl_create_new_project))
         }
 
+        // ============= POPUP TO SELECT IMAGE FROM GALLERY OR CAPTURE FROM CAMERA
         SelectImagePopUp(
             showDialog = showDialog,
             onDismiss = { showDialog = false },
             onClickCamera = {
                 navController.navigate(route = Route.CaptureImage.route)
-                            },
+            },
             onClickGallery = {
                 launcher.launch(
                     PickVisualMediaRequest(
@@ -106,8 +107,8 @@ fun HomeScreen(
 
         // ========== Fetch Project List from Database and show on List
 
-        val projectListDecending: List<Project> by mainViewModel.projectList.observeAsState(initial = listOf())
-        val projectList=projectListDecending.reversed()
+        val projectListDescending: List<Project> by mainViewModel.projectList.observeAsState(initial = listOf())
+        val projectList = projectListDescending.reversed()
         if (projectList.isNotEmpty()) {
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -116,7 +117,6 @@ fun HomeScreen(
             ) {
                 items(items = projectList) { project ->
                     ProjectItem(project = project, onItemClick = { selectedProject ->
-                        Log.d("TAG", "Selected ImageURL " + selectedProject.imageUrl)
                         mainViewModel.imageUrl.value = selectedProject.imageUrl
                         navController.navigate(route = Route.EditImage.route)
                     })
@@ -125,7 +125,6 @@ fun HomeScreen(
         }
     }
 }
-
 
 
 @Composable
@@ -138,6 +137,7 @@ fun ProjectItem(project: Project, onItemClick: (Project) -> Unit) {
                 onItemClick.invoke(project)
             }),
         shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
     ) {
 
         Row(
@@ -152,7 +152,7 @@ fun ProjectItem(project: Project, onItemClick: (Project) -> Unit) {
             LoadImageFromUri(
                 context = LocalContext.current,
                 imageUri = project.imageUrl,
-                transformation = CircleCropTransformation(),
+                transformation = listOf( CircleCropTransformation()),
                 imageSize = 64.dp,
                 scaleType = ContentScale.Crop
             )

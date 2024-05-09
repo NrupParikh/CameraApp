@@ -14,7 +14,7 @@ import coil.transform.Transformation
 fun LoadImageFromUri(
     context: Context,
     imageUri: String,
-    transformation: Transformation?,
+    transformation: List<Transformation>,
     imageSize: Dp,
     scaleType: ContentScale
 
@@ -24,11 +24,7 @@ fun LoadImageFromUri(
     )
 
     AsyncImage(
-        model = if (transformation != null) {
-            imageRequest.transformations(transformation).build()
-        } else {
-            imageRequest.build()
-        },
+        model = imageRequest.transformations(transformation.toList()).build(),
         contentDescription = "Image Description",
         modifier = Modifier.size(imageSize),
         contentScale = scaleType,

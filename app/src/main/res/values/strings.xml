@@ -8,7 +8,8 @@
 
     <string name="lbl_project_id">Project Id : %d</string>
     <string name="lbl_created_at">Created At : %s</string>
-    <string name="lbl_title_popup_select_image">Select option</string>
+    <string name="lbl_title_popup_select_image">Select Option</string>
     <string name="lbl_button_open_camera">Open Camera</string>
     <string name="lbl_button_open_gallery">Open Gallery</string>
+    <string name="lbl_allow_camera_permission">Allow Camera Permission For this feature</string>
 </resources>

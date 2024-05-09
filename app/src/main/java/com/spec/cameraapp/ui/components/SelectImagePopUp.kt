@@ -41,7 +41,8 @@ fun SelectImagePopUp(
                     Text(text =String.format(
                         stringResource(id =  R.string.lbl_title_popup_select_image)),
                         style = TextStyle(fontStyle = FontStyle.Normal,
-                            fontWeight = FontWeight.Bold)
+                            fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.inversePrimary
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = { onClickCamera(); onDismiss() }) {

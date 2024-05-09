@@ -91,10 +91,10 @@ fun CameraPreviewScreen(
         ImageCapture.Builder().build()
     }
 
-    // ======================== LaunchedEffect
+    // ======================== LaunchedEffect : Executed only when key get changed
 
     // Changed from lensFacing to toggleCamera.value
-    LaunchedEffect(toggleCamera.value) {
+    LaunchedEffect(key1 = toggleCamera.value) {
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
         cameraProvider.bindToLifecycle(lifecycleOwner, cameraxSelector, preview, imageCapture)
@@ -108,6 +108,7 @@ fun CameraPreviewScreen(
         modifier = Modifier.fillMaxSize()
     ) {
 
+        // This is actual camera preview
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
         BottomButtonUI(
@@ -151,7 +152,6 @@ private fun captureImage(
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 val storedImagePath = outputFileResults.savedUri.toString()
-                Log.d("TAG", "SUCCESS $storedImagePath")
 
                 storeImagePathInDB(mainViewModel, storedImagePath)
                 Toast.makeText(
@@ -161,7 +161,7 @@ private fun captureImage(
                 )
                     .show()
                 // Navigate to Captured Image Screen
-                mainViewModel.imageUrl.value = storedImagePath.toString()
+                mainViewModel.imageUrl.value = storedImagePath
                 navController.popBackStack()
                 navController.navigate(Route.EditImage.route)
 
@@ -169,7 +169,6 @@ private fun captureImage(
             }
 
             override fun onError(exception: ImageCaptureException) {
-                Log.d("TAG", "FAILED $exception")
                 Toast.makeText(context, "Exception $exception", Toast.LENGTH_LONG)
                     .show()
             }

@@ -2,7 +2,6 @@ package com.spec.cameraapp.ui.fragment.image_editing
 
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -50,8 +50,7 @@ fun ImageEditingScreen(
 
     val photoUri = mainViewModel.imageUrl.observeAsState(initial = "")
     val selectedTransformation = mainViewModel.selectedTransformation.observeAsState()
-
-    Log.d("TAG", "DURL $photoUri")
+    val listOfTransformations = remember { mutableListOf<Transformation>() }
 
 //    val photoUri = "content://media/external/images/media/1000060027"
 //    val photoUri = "content://media/picker/0/com.android.providers.media.photopicker/media/1000058380"
@@ -109,10 +108,13 @@ fun ImageEditingScreen(
                         MaskTransformation(context = LocalContext.current, R.drawable.ic_splash)
                 }
 
+                // Adding multiple transformations
+                transformation?.let { listOfTransformations.add(it) }
+
                 LoadImageFromUri(
                     context = LocalContext.current,
                     imageUri = photoUri.value,
-                    transformation = transformation,
+                    transformation = listOfTransformations,
                     imageSize = 500.dp,
                     scaleType = ContentScale.Crop
                 )
@@ -178,7 +180,6 @@ fun TransformationBox(mainViewModel: MainViewModel) {
         items(items = transformationList) { transformation ->
             ImageTransformationItem(transformation, onItemClick = { selectedTransformation ->
                 mainViewModel.selectedTransformation.value = selectedTransformation.type
-                Log.d("TAG", "Selected Transformation " + selectedTransformation.type)
             })
         }
     }
