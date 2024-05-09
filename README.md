@@ -29,9 +29,6 @@ Welcome to the Camera App built with the power of Kotlin Jetpack Compose! This a
 
 That's it! You're ready to explore the world of stunning image capture and transformation with our Camera App powered by Jetpack Compose.
 
-## Contributing
-
-We welcome contributions from the community to make our app even better! Whether it's bug fixes, feature enhancements, or feedback, feel free to open an issue or submit a pull request.
 
 ## License
 
