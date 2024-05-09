@@ -17,3 +17,6 @@
   - Gray Scale Transformation
   - Color Filter Transformation
   - Mask Transformation
+
+### Wireframe Link
+https://www.figma.com/design/MQZLz6ivNJgXeCHQ1OChjZ/Photo_Edit?node-id=0-1&t=QeYjFx8SeIzb9EhB-0
