@@ -1,5 +1,6 @@
 package com.spec.cameraapp.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,8 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.transform.Transformation
+import com.spec.cameraapp.R
+import com.spec.cameraapp.ui.theme.CameraAppTheme
+import com.spec.cameraapp.utils.transformations.GrayscaleTransformation
 import com.spec.cameraapp.utils.transformations.TransformationItem
+import com.spec.cameraapp.utils.transformations.TransformationType
 
 @Composable
 fun ImageTransformationItem(
@@ -36,5 +43,37 @@ fun ImageTransformationItem(
                 }
                 .size(48.dp)
         )
+    }
+}
+
+@Composable
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+fun PreviewImageTransformationItemNight() {
+    CameraAppTheme {
+        ImageTransformationItem(
+            transformation =
+            TransformationItem(
+                id = 1, icon = R.drawable.ic_rounded_corner,
+                TransformationType.ROUNDED_CORNER.name
+            )
+        ) {
+
+        }
+    }
+}
+
+@Composable
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+fun PreviewImageTransformationItemLight() {
+    CameraAppTheme {
+        ImageTransformationItem(
+            transformation =
+            TransformationItem(
+                id = 1, icon = R.drawable.ic_rounded_corner,
+                TransformationType.ROUNDED_CORNER.name
+            )
+        ) {
+
+        }
     }
 }

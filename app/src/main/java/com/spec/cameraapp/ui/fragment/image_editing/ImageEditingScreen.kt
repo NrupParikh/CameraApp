@@ -1,6 +1,7 @@
 package com.spec.cameraapp.ui.fragment.image_editing
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.graphics.Color
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.navigation.NavHostController
@@ -25,8 +27,12 @@ import coil.transform.CircleCropTransformation
 import coil.transform.RoundedCornersTransformation
 import coil.transform.Transformation
 import com.spec.cameraapp.R
+import com.spec.cameraapp.db.dao.ProjectDao
+import com.spec.cameraapp.db.table.Project
+import com.spec.cameraapp.repository.ProjectRepository
 import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
+import com.spec.cameraapp.ui.theme.CameraAppTheme
 import com.spec.cameraapp.utils.transformations.BlurTransformation
 import com.spec.cameraapp.utils.transformations.ColorFilterTransformation
 import com.spec.cameraapp.utils.transformations.GrayscaleTransformation
@@ -183,4 +189,36 @@ fun TransformationBox(mainViewModel: MainViewModel) {
             })
         }
     }
+}
+
+@Composable
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+fun PreviewTransformationBoxNight() {
+    CameraAppTheme {
+        TransformationBox(MainViewModel(ProjectRepository(projectDao = ProjectDaoClass())))
+    }
+}
+
+@Composable
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+fun PreviewTransformationBoxLight() {
+    CameraAppTheme {
+        TransformationBox(MainViewModel(ProjectRepository(projectDao = ProjectDaoClass())))
+    }
+}
+
+// Preview Only Impl class
+class ProjectDaoClass : ProjectDao {
+    override suspend fun createNewProject(project: Project) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllProjects(): List<Project> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteProject(project: Project) {
+        TODO("Not yet implemented")
+    }
+
 }

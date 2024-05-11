@@ -1,5 +1,6 @@
 package com.spec.cameraapp.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -13,9 +14,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.spec.cameraapp.R
+import com.spec.cameraapp.ui.theme.CameraAppTheme
 
 @Composable
 fun SelectImagePopUp(
@@ -56,6 +59,20 @@ fun SelectImagePopUp(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+fun PreviewSelectImagePopupNight(){
+    CameraAppTheme {
+        SelectImagePopUp(
+            onClickCamera = { /*TODO*/ },
+            onClickGallery = { /*TODO*/ },
+            showDialog = true
+        ) {
+            
         }
     }
 }

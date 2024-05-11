@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val projectRepository: ProjectRepository) :
+open class MainViewModel @Inject constructor(private val projectRepository: ProjectRepository) :
     ViewModel() {
 
     val projectList = MutableLiveData<List<Project>>()

@@ -1,5 +1,6 @@
 package com.spec.cameraapp.ui.fragment.home
 
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.foundation.clickable
 import android.widget.Toast
@@ -34,8 +35,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.transform.CircleCropTransformation
 import com.spec.cameraapp.R
 import com.spec.cameraapp.db.table.Project
@@ -43,6 +46,7 @@ import com.spec.cameraapp.ui.components.LoadImageFromUri
 import com.spec.cameraapp.ui.components.SelectImagePopUp
 import com.spec.cameraapp.ui.fragment.capture_image.storeImagePathInDB
 import com.spec.cameraapp.ui.navigation.Route
+import com.spec.cameraapp.ui.theme.CameraAppTheme
 import com.spec.cameraapp.viewmodels.MainViewModel
 
 /*
@@ -152,7 +156,7 @@ fun ProjectItem(project: Project, onItemClick: (Project) -> Unit) {
             LoadImageFromUri(
                 context = LocalContext.current,
                 imageUri = project.imageUrl,
-                transformation = listOf( CircleCropTransformation()),
+                transformation = listOf(CircleCropTransformation()),
                 imageSize = 64.dp,
                 scaleType = ContentScale.Crop
             )
@@ -177,6 +181,38 @@ fun ProjectItem(project: Project, onItemClick: (Project) -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
             }
+        }
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewProjectItemNight() {
+    CameraAppTheme {
+        ProjectItem(
+            project = Project(
+                id = 1,
+                imageUrl = "",
+                createdAt = "2024-05-09T12:58:37.133549z"
+            )
+        ) {
+
+        }
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun PreviewProjectItemLight() {
+    CameraAppTheme {
+        ProjectItem(
+            project = Project(
+                id = 1,
+                imageUrl = "",
+                createdAt = "2024-05-09T12:58:37.133549z"
+            )
+        ) {
+
         }
     }
 }

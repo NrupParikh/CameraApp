@@ -1,5 +1,6 @@
 package com.spec.cameraapp.ui.topbar
 
+import android.content.res.Configuration
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,10 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.spec.cameraapp.ui.components.currentRoute
 import com.spec.cameraapp.ui.navigation.Route
+import com.spec.cameraapp.ui.theme.CameraAppTheme
 import com.spec.cameraapp.utils.getScreenNameFromRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,4 +55,21 @@ fun MyTopAppBar(navController: NavController) {
         }
     )
 
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewMyTopAppBarNight() {
+    CameraAppTheme {
+        MyTopAppBar(navController = NavController(LocalContext.current))
+    }
+
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun PreviewMyTopAppBarLight() {
+    CameraAppTheme {
+        MyTopAppBar(navController = NavController(LocalContext.current))
+    }
 }
