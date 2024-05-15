@@ -57,6 +57,7 @@ fun ImageEditingScreen(
     val photoUri = mainViewModel.imageUrl.observeAsState(initial = "")
     val selectedTransformation = mainViewModel.selectedTransformation.observeAsState()
     val listOfTransformations = remember { mutableListOf<Transformation>() }
+    val roundedCornersTransformationValue = 50f
 
 //    val photoUri = "content://media/external/images/media/1000060027"
 //    val photoUri = "content://media/picker/0/com.android.providers.media.photopicker/media/1000058380"
@@ -90,7 +91,7 @@ fun ImageEditingScreen(
                 val transformationValue = selectedTransformation.value
                 when (transformationValue) {
                     TransformationType.ROUNDED_CORNER.name -> transformation =
-                        RoundedCornersTransformation(50f)
+                        RoundedCornersTransformation(roundedCornersTransformationValue)
 
                     TransformationType.CIRCLE_CROP.name -> transformation =
                         CircleCropTransformation()
@@ -184,8 +185,11 @@ fun TransformationBox(mainViewModel: MainViewModel) {
         state = lazyListState
     ) {
         items(items = transformationList) { transformation ->
-            ImageTransformationItem(transformation, onItemClick = { selectedTransformation ->
+            ImageTransformationItem(transformation,
+                onItemClick = {
+                    selectedTransformation ->
                 mainViewModel.selectedTransformation.value = selectedTransformation.type
+
             })
         }
     }
