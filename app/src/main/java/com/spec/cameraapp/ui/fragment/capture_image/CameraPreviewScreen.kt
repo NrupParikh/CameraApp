@@ -2,14 +2,8 @@ package com.spec.cameraapp.ui.fragment.capture_image
 
 import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -28,10 +22,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,11 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
+import com.spec.cameraapp.R
 import com.spec.cameraapp.db.table.Project
 import com.spec.cameraapp.ui.components.CircularImageButton
 import com.spec.cameraapp.ui.navigation.Route
-import com.spec.cameraapp.utils.ROUTE_IMAGE_EDIT
 import com.spec.cameraapp.viewmodels.MainViewModel
 import java.time.Instant
 import kotlin.coroutines.resume
@@ -131,7 +122,10 @@ private fun captureImage(
     navController: NavHostController
 ) {
 
-    val name = "CameraxImage.jpeg"
+
+    // For unique name we append the time
+    val currentTime = Instant.now().epochSecond
+    val name = "${context.getString(R.string.app_name)}_${currentTime}.jpeg"
     val contentValues = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, name)
         put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
