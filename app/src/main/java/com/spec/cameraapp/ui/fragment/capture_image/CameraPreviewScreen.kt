@@ -169,6 +169,7 @@ private fun captureImage(
             }
 
             override fun onError(exception: ImageCaptureException) {
+                Log.d("JBK","Error ${exception.toString()}")
                 Toast.makeText(context, "Exception $exception", Toast.LENGTH_LONG)
                     .show()
             }
