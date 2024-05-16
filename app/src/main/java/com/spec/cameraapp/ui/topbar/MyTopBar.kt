@@ -1,8 +1,10 @@
 package com.spec.cameraapp.ui.topbar
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,11 +20,12 @@ import androidx.navigation.NavController
 import com.spec.cameraapp.ui.components.currentRoute
 import com.spec.cameraapp.ui.navigation.Route
 import com.spec.cameraapp.ui.theme.CameraAppTheme
+import com.spec.cameraapp.utils.ROUTE_IMAGE_EDIT
 import com.spec.cameraapp.utils.getScreenNameFromRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(navController: NavController) {
+fun MyTopAppBar(navController: NavController ) {
 
     val currentRoute = currentRoute(navController = navController)
 
@@ -52,7 +55,11 @@ fun MyTopAppBar(navController: NavController) {
                     )
                 }
             }
-        }
+        },
+
+
+
+
     )
 
 }

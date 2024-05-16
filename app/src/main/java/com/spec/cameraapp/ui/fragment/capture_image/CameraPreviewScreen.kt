@@ -152,16 +152,16 @@ private fun captureImage(
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 val storedImagePath = outputFileResults.savedUri.toString()
-
-                storeImagePathInDB(mainViewModel, storedImagePath)
+                var path = mainViewModel.setTempPath(outputFileResults.savedUri!!, context)
+                storeImagePathInDB(mainViewModel, path)
                 Toast.makeText(
                     context,
-                    "Image stored at $storedImagePath",
+                    "Image stored at $path",
                     Toast.LENGTH_LONG
                 )
                     .show()
                 // Navigate to Captured Image Screen
-                mainViewModel.imageUrl.value = storedImagePath
+                mainViewModel.imageUrl.value = path
                 navController.popBackStack()
                 navController.navigate(Route.EditImage.route)
 
