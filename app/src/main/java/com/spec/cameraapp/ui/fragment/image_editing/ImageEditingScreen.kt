@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +60,7 @@ fun ImageEditingScreen(
     val photoUri = mainViewModel.imageUrl.observeAsState(initial = "")
     val selectedTransformation = mainViewModel.selectedTransformation.observeAsState()
     val listOfTransformations = remember { mutableListOf<Transformation>() }
+    var roundCornerSliderValueTrans = remember { mutableStateOf(0f) }
 
 //    val photoUri = "content://media/external/images/media/1000060027"
 //    val photoUri = "content://media/picker/0/com.android.providers.media.photopicker/media/1000058380"
@@ -90,7 +94,7 @@ fun ImageEditingScreen(
                 val transformationValue = selectedTransformation.value
                 when (transformationValue) {
                     TransformationType.ROUNDED_CORNER.name -> transformation =
-                        RoundedCornersTransformation(50f)
+                        RoundedCornersTransformation(roundCornerSliderValueTrans.value)
 
                     TransformationType.CIRCLE_CROP.name -> transformation =
                         CircleCropTransformation()
@@ -115,7 +119,12 @@ fun ImageEditingScreen(
                 }
 
                 // Adding multiple transformations
-                transformation?.let { listOfTransformations.add(it) }
+                transformation?.let {it->
+                    if(listOfTransformations.contains(it))
+                        listOfTransformations.remove(it)
+                    else
+                        listOfTransformations.add(it)
+                }
 
                 LoadImageFromUri(
                     context = LocalContext.current,
@@ -126,6 +135,22 @@ fun ImageEditingScreen(
                 )
             }
         }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Slider(
+                value = roundCornerSliderValueTrans.value,
+                onValueChange = { roundCornerSliderValueTrans.value = it },
+                valueRange = 0f..100f
+            )
+            Text(text = "Value: ${roundCornerSliderValueTrans.value}")
+        }
+
 
         TransformationBox(mainViewModel)
     }
@@ -140,7 +165,8 @@ fun TransformationBox(mainViewModel: MainViewModel) {
     // List of Transformations
     val transformationList: List<TransformationItem> = mutableListOf(
         TransformationItem(
-            id = 1, icon = R.drawable.ic_rounded_corner,
+            id = 1,
+            icon = R.drawable.ic_rounded_corner,
             TransformationType.ROUNDED_CORNER.name
         ),
         TransformationItem(
@@ -183,8 +209,13 @@ fun TransformationBox(mainViewModel: MainViewModel) {
             .padding(4.dp),
         state = lazyListState
     ) {
-        items(items = transformationList) { transformation ->
-            ImageTransformationItem(transformation, onItemClick = { selectedTransformation ->
+        items(items = transformationList)
+        { transformation ->
+            ImageTransformationItem(
+                transformation,
+                false,
+                onItemClick = {
+                    selectedTransformation ->
                 mainViewModel.selectedTransformation.value = selectedTransformation.type
             })
         }
