@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.navigation.NavHostController
-import coil.transform.CircleCropTransformation
 import coil.transform.Transformation
 import com.spec.cameraapp.R
 import com.spec.cameraapp.db.dao.ProjectDao
@@ -36,7 +35,6 @@ import com.spec.cameraapp.ui.theme.CameraAppTheme
 import com.spec.cameraapp.utils.transformations.ColorFilterTransformation
 import com.spec.cameraapp.utils.transformations.GrayscaleTransformation
 import com.spec.cameraapp.utils.transformations.MaskTransformation
-import com.spec.cameraapp.utils.transformations.SquareCropTransformation
 import com.spec.cameraapp.utils.transformations.TransformationItem
 import com.spec.cameraapp.utils.transformations.TransformationType
 import com.spec.cameraapp.viewmodels.MainViewModel
@@ -56,13 +54,22 @@ fun ImageEditingScreen(
     val photoUri = mainViewModel.imageUrl.observeAsState(initial = "")
     val selectedTransformation = mainViewModel.selectedTransformation.observeAsState()
     val listOfTransformations = remember { mutableListOf<Transformation>() }
+
     val roundCornerSliderValueTrans = mainViewModel.roundCornerSliderValueTrans.observeAsState()
     val roundCornerSliderValueTransisSelected =
-        mainViewModel.roundCornerSliderValueTransisSelected.observeAsState()
-    val blurSliderValueTrans = mainViewModel.blurSliderValueTrans.observeAsState()
-    val blurSliderValueTransisSelected =
-        mainViewModel.blurSliderValueTransisSelected.observeAsState()
+        mainViewModel.roundCornerSliderValueTransIsSelected.observeAsState()
 
+    val blurSliderValueTrans = mainViewModel.blurSliderValueTrans.observeAsState()
+    val blurSliderValueTransIsSelected =
+        mainViewModel.blurSliderValueTransIsSelected.observeAsState()
+
+    val circleCropSliderValueTrans = mainViewModel.circleCropSliderValueTrans.observeAsState()
+    val circleCropSliderValueTransIsSelected =
+        mainViewModel.circleCropSliderValueTransIsSelected.observeAsState()
+
+    val resizeSliderValueTrans = mainViewModel.resizeSliderValueTrans.observeAsState()
+    val resizeSliderValueTransIsSelected =
+        mainViewModel.resizeSliderValueTransIsSelected.observeAsState()
 
 //    val photoUri = "content://media/external/images/media/1000060027"
 //    val photoUri = "content://media/picker/0/com.android.providers.media.photopicker/media/1000058380"
@@ -98,11 +105,11 @@ fun ImageEditingScreen(
                     TransformationType.ROUNDED_CORNER.name -> transformation = null
 //                        RoundedCornersTransformation(roundCornerSliderValueTrans.value!!)
 
-                    TransformationType.CIRCLE_CROP.name -> transformation =
-                        CircleCropTransformation()
+                    TransformationType.CIRCLE_CROP.name -> transformation = null
+//                        CircleCropTransformation()
 
-                    TransformationType.SQUARE_CROP.name -> transformation =
-                        SquareCropTransformation()
+                    TransformationType.RESIZE_IMAGE.name -> transformation = null
+//                        SquareCropTransformation()
 
                     TransformationType.BLUR.name -> transformation = null
 //                        BlurTransformation(
@@ -138,10 +145,18 @@ fun ImageEditingScreen(
                     context = LocalContext.current,
                     imageUri = photoUri.value,
                     transformation = listOfTransformations,
-                    imageSize = 500.dp,
+                    imageSize =
+                    if (circleCropSliderValueTransIsSelected.value == true) {
+                        circleCropSliderValueTrans.value?.dp ?: 350.dp
+                    } else if (resizeSliderValueTransIsSelected.value == true) {
+                        resizeSliderValueTrans.value?.dp ?: 350.dp
+                    } else {
+                        350.dp
+                    },
                     scaleType = ContentScale.Crop,
                     roundedCornerRadius = roundCornerSliderValueTrans.value?.dp ?: 0.dp,
-                    blurRadius = blurSliderValueTrans.value?.dp ?: 0.dp
+                    blurRadius = blurSliderValueTrans.value?.dp ?: 0.dp,
+                    isCircleShape = circleCropSliderValueTransIsSelected.value == true
                 )
             }
         }
@@ -159,11 +174,23 @@ fun ImageEditingScreen(
                     onValueChange = { mainViewModel.roundCornerSliderValueTrans.value = it },
                     valueRange = 1f..100f
                 )
-            } else if (blurSliderValueTransisSelected.value!!) {
+            } else if (circleCropSliderValueTransIsSelected.value!!) {
+                Slider(
+                    value = circleCropSliderValueTrans.value!!,
+                    onValueChange = { mainViewModel.circleCropSliderValueTrans.value = it },
+                    valueRange = 1f..350f
+                )
+            } else if (blurSliderValueTransIsSelected.value!!) {
                 Slider(
                     value = blurSliderValueTrans.value!!,
                     onValueChange = { mainViewModel.blurSliderValueTrans.value = it },
                     valueRange = 1f..100f
+                )
+            } else if (resizeSliderValueTransIsSelected.value!!) {
+                Slider(
+                    value = resizeSliderValueTrans.value!!,
+                    onValueChange = { mainViewModel.resizeSliderValueTrans.value = it },
+                    valueRange = 1f..350f
                 )
             }
         }
@@ -192,7 +219,7 @@ fun TransformationBox(mainViewModel: MainViewModel) {
         TransformationItem(
             id = 3,
             icon = R.drawable.ic_sqaure_crop,
-            TransformationType.SQUARE_CROP.name
+            TransformationType.RESIZE_IMAGE.name
         ),
         TransformationItem(
             id = 4,
@@ -234,22 +261,32 @@ fun TransformationBox(mainViewModel: MainViewModel) {
                     when (selectedTransformation.type) {
                         TransformationType.ROUNDED_CORNER.name -> {
 
-                            mainViewModel.roundCornerSliderValueTransisSelected.value = isClick
-                            mainViewModel.blurSliderValueTransisSelected.value = false
+                            mainViewModel.roundCornerSliderValueTransIsSelected.value = isClick
+                            mainViewModel.blurSliderValueTransIsSelected.value = false
+                            mainViewModel.circleCropSliderValueTransIsSelected.value = false
+                            mainViewModel.resizeSliderValueTransIsSelected.value = false
 
                         }
 
                         TransformationType.CIRCLE_CROP.name -> {
-
+                            mainViewModel.circleCropSliderValueTransIsSelected.value = isClick
+                            mainViewModel.blurSliderValueTransIsSelected.value = false
+                            mainViewModel.roundCornerSliderValueTransIsSelected.value = false
+                            mainViewModel.resizeSliderValueTransIsSelected.value = false
                         }
 
-                        TransformationType.SQUARE_CROP.name -> {
-
+                        TransformationType.RESIZE_IMAGE.name -> {
+                            mainViewModel.resizeSliderValueTransIsSelected.value = isClick
+                            mainViewModel.circleCropSliderValueTransIsSelected.value = false
+                            mainViewModel.blurSliderValueTransIsSelected.value = false
+                            mainViewModel.roundCornerSliderValueTransIsSelected.value = false
                         }
 
                         TransformationType.BLUR.name -> {
-                            mainViewModel.blurSliderValueTransisSelected.value = isClick
-                            mainViewModel.roundCornerSliderValueTransisSelected.value = false
+                            mainViewModel.blurSliderValueTransIsSelected.value = isClick
+                            mainViewModel.roundCornerSliderValueTransIsSelected.value = false
+                            mainViewModel.circleCropSliderValueTransIsSelected.value = false
+                            mainViewModel.resizeSliderValueTransIsSelected.value = false
 
                         }
 

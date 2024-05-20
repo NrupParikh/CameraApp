@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,7 +31,8 @@ fun LoadImageFromUri(
     imageSize: Dp,
     scaleType: ContentScale,
     blurRadius: Dp,
-    roundedCornerRadius: Dp
+    roundedCornerRadius: Dp,
+    isCircleShape: Boolean
 
 ) {
     val imageRequest = ImageRequest.Builder(context = context).data(
@@ -41,11 +43,17 @@ fun LoadImageFromUri(
         model = imageRequest.transformations(transformation.toList()).build(),
         contentDescription = "Image Description",
         modifier = Modifier
-            .size(imageSize)
             // For Rounded Corner
-            .clip(RoundedCornerShape(roundedCornerRadius))
+            .clip(
+                if (isCircleShape) {
+                    CircleShape
+                } else {
+                    RoundedCornerShape(roundedCornerRadius)
+                }
+            )
             // For Blur
-            .blur(blurRadius),
+            .blur(blurRadius)
+            .size(imageSize),
         contentScale = scaleType,
         placeholder = painterResource(id = R.drawable.ic_launcher_foreground)
     )
@@ -62,7 +70,8 @@ fun PreviewLoadImageFromUriNight() {
             imageSize = 48.dp,
             scaleType = ContentScale.Crop,
             roundedCornerRadius = 0.dp,
-            blurRadius = 0.dp
+            blurRadius = 0.dp,
+            isCircleShape = true
         )
     }
 }
@@ -78,7 +87,8 @@ fun PreviewLoadImageFromUriLight() {
             imageSize = 48.dp,
             scaleType = ContentScale.Crop,
             roundedCornerRadius = 0.dp,
-            blurRadius = 0.dp
+            blurRadius = 0.dp,
+            isCircleShape = true
         )
     }
 }

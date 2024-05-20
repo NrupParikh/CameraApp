@@ -3,8 +3,6 @@ package com.spec.cameraapp.viewmodels
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,14 +22,18 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
     val projectList = MutableLiveData<List<Project>>()
     val imageUrl = MutableLiveData<String>()
     val selectedTransformation = MutableLiveData<String>()
-    var roundCornerSliderValueTrans =MutableLiveData<Float>(0f)
-    var roundCornerSliderValueTransisSelected = MutableLiveData<Boolean>(false)
-    var blurSliderValueTrans = MutableLiveData<Float>(1f)
-    var blurSliderValueTransisSelected = MutableLiveData<Boolean>(false)
-    var CircleCropSliderValueTrans = MutableLiveData<Float>(1f)
-    var CircleCropSliderValueTransisSelected = MutableLiveData<Boolean>(false)
-    var SquareCropSliderValueTrans = MutableLiveData<Float>(1f)
-    var SquareCropSliderValueTransisSelected = MutableLiveData<Boolean>(false)
+
+    var roundCornerSliderValueTrans = MutableLiveData(0f)
+    var roundCornerSliderValueTransIsSelected = MutableLiveData(false)
+
+    var blurSliderValueTrans = MutableLiveData(1f)
+    var blurSliderValueTransIsSelected = MutableLiveData(false)
+
+    var circleCropSliderValueTrans = MutableLiveData(350f)
+    var circleCropSliderValueTransIsSelected = MutableLiveData(false)
+
+    var resizeSliderValueTrans = MutableLiveData(350f)
+    var resizeSliderValueTransIsSelected = MutableLiveData(false)
 
     init {
         getAllProjects()
@@ -61,7 +63,7 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
         }
     }
 
-    fun setTempPath(imageUri: Uri, current: Context) :String{
+    fun setTempPath(imageUri: Uri, current: Context): String {
 
         val inputStream = current.contentResolver.openInputStream(imageUri)
 
@@ -79,7 +81,7 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
     }
 
     private fun getExtentionType(imageUri: Uri, current: Context): String {
-            val mimeType = current.contentResolver.getType(imageUri)
-            return mimeType?.substringAfterLast('/') ?: "jpg"
+        val mimeType = current.contentResolver.getType(imageUri)
+        return mimeType?.substringAfterLast('/') ?: "jpg"
     }
 }

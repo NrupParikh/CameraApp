@@ -10,7 +10,7 @@ data class TransformationItem(
 enum class TransformationType{
     ROUNDED_CORNER,
     CIRCLE_CROP,
-    SQUARE_CROP,
+    RESIZE_IMAGE,
     BLUR,
     GRAY_SCALE,
     COLOR_FILTER,
