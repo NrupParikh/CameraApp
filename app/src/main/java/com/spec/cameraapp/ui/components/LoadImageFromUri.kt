@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -23,7 +24,8 @@ fun LoadImageFromUri(
     imageUri: String,
     transformation: List<Transformation>,
     imageSize: Dp,
-    scaleType: ContentScale
+    scaleType: ContentScale,
+    blurRadius: Dp
 
 ) {
     val imageRequest = ImageRequest.Builder(context = context).data(
@@ -33,7 +35,9 @@ fun LoadImageFromUri(
     AsyncImage(
         model = imageRequest.transformations(transformation.toList()).build(),
         contentDescription = "Image Description",
-        modifier = Modifier.size(imageSize),
+        modifier = Modifier
+            .size(imageSize)
+            .blur(blurRadius),
         contentScale = scaleType,
         placeholder = painterResource(id = R.drawable.ic_launcher_foreground)
     )
@@ -48,7 +52,8 @@ fun PreviewLoadImageFromUriNight() {
             imageUri = "",
             transformation = listOf(),
             imageSize = 48.dp,
-            scaleType = ContentScale.Crop
+            scaleType = ContentScale.Crop,
+            blurRadius = 0.dp
         )
     }
 }
@@ -62,7 +67,8 @@ fun PreviewLoadImageFromUriLight() {
             imageUri = "",
             transformation = listOf(),
             imageSize = 48.dp,
-            scaleType = ContentScale.Crop
+            scaleType = ContentScale.Crop,
+            blurRadius = 0.dp
         )
     }
 }

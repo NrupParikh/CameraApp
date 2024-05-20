@@ -62,10 +62,12 @@ fun ImageEditingScreen(
     val photoUri = mainViewModel.imageUrl.observeAsState(initial = "")
     val selectedTransformation = mainViewModel.selectedTransformation.observeAsState()
     val listOfTransformations = remember { mutableListOf<Transformation>() }
-    var roundCornerSliderValueTrans = mainViewModel.roundCornerSliderValueTrans.observeAsState()
-    var roundCornerSliderValueTransisSelected =  mainViewModel.roundCornerSliderValueTransisSelected.observeAsState()
-    var blurSliderValueTrans =  mainViewModel.blurSliderValueTrans.observeAsState()
-    var blurSliderValueTransisSelected =  mainViewModel.blurSliderValueTransisSelected.observeAsState()
+    val roundCornerSliderValueTrans = mainViewModel.roundCornerSliderValueTrans.observeAsState()
+    val roundCornerSliderValueTransisSelected =
+        mainViewModel.roundCornerSliderValueTransisSelected.observeAsState()
+    val blurSliderValueTrans = mainViewModel.blurSliderValueTrans.observeAsState()
+    val blurSliderValueTransisSelected =
+        mainViewModel.blurSliderValueTransisSelected.observeAsState()
 
 
 //    val photoUri = "content://media/external/images/media/1000060027"
@@ -108,8 +110,11 @@ fun ImageEditingScreen(
                     TransformationType.SQUARE_CROP.name -> transformation =
                         SquareCropTransformation()
 
-                    TransformationType.BLUR.name -> transformation =
-                        BlurTransformation(context = LocalContext.current, blurSliderValueTrans.value!!)
+                    TransformationType.BLUR.name -> transformation = null
+//                        BlurTransformation(
+//                            context = LocalContext.current,
+//                            blurSliderValueTrans.value!!
+//                        )
 
 
                     TransformationType.GRAY_SCALE.name -> transformation =
@@ -125,7 +130,7 @@ fun ImageEditingScreen(
                 }
 
                 // Adding multiple transformations
-                transformation?.let {it->
+                transformation?.let { it ->
 
                     listOfTransformations.add(it)
 
@@ -140,7 +145,8 @@ fun ImageEditingScreen(
                     imageUri = photoUri.value,
                     transformation = listOfTransformations,
                     imageSize = 500.dp,
-                    scaleType = ContentScale.Crop
+                    scaleType = ContentScale.Crop,
+                    blurRadius = blurSliderValueTrans.value?.dp ?: 0.dp
                 )
             }
         }
@@ -152,22 +158,20 @@ fun ImageEditingScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if(roundCornerSliderValueTransisSelected.value!!)
+            if (roundCornerSliderValueTransisSelected.value!!) {
                 Slider(
-                value = roundCornerSliderValueTrans.value!!,
-                onValueChange = { mainViewModel.roundCornerSliderValueTrans.value = it },
-                valueRange = 1f..100f
-            )
-            if(blurSliderValueTransisSelected.value!!)
-            Slider(
-                value = blurSliderValueTrans.value!!,
-                onValueChange = { mainViewModel.blurSliderValueTrans.value = it.coerceIn(0f, 25F) },
-                valueRange = 1f..25f
-            )
-
+                    value = roundCornerSliderValueTrans.value!!,
+                    onValueChange = { mainViewModel.roundCornerSliderValueTrans.value = it },
+                    valueRange = 1f..100f
+                )
+            } else if (blurSliderValueTransisSelected.value!!) {
+                Slider(
+                    value = blurSliderValueTrans.value!!,
+                    onValueChange = { mainViewModel.blurSliderValueTrans.value = it },
+                    valueRange = 1f..25f
+                )
+            }
         }
-
-
         TransformationBox(mainViewModel)
     }
 }
@@ -230,14 +234,13 @@ fun TransformationBox(mainViewModel: MainViewModel) {
             ImageTransformationItem(
                 transformation,
                 false,
-                onItemClick = {
-                    selectedTransformation,isClick ->
-                mainViewModel.selectedTransformation.value = selectedTransformation.type
-                    when(selectedTransformation.type){
+                onItemClick = { selectedTransformation, isClick ->
+                    mainViewModel.selectedTransformation.value = selectedTransformation.type
+                    when (selectedTransformation.type) {
                         TransformationType.ROUNDED_CORNER.name -> {
 
-                         mainViewModel.roundCornerSliderValueTransisSelected.value=isClick
-                         mainViewModel.blurSliderValueTransisSelected.value=false
+                            mainViewModel.roundCornerSliderValueTransisSelected.value = isClick
+                            mainViewModel.blurSliderValueTransisSelected.value = false
 
                         }
 
@@ -248,9 +251,10 @@ fun TransformationBox(mainViewModel: MainViewModel) {
                         TransformationType.SQUARE_CROP.name -> {
 
                         }
+
                         TransformationType.BLUR.name -> {
-                            mainViewModel.blurSliderValueTransisSelected.value=isClick
-                            mainViewModel.roundCornerSliderValueTransisSelected.value=false
+                            mainViewModel.blurSliderValueTransisSelected.value = isClick
+                            mainViewModel.roundCornerSliderValueTransisSelected.value = false
 
                         }
 
@@ -266,7 +270,7 @@ fun TransformationBox(mainViewModel: MainViewModel) {
 
                         }
                     }
-            })
+                })
         }
     }
 }

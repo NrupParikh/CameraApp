@@ -3,6 +3,7 @@ package com.spec.cameraapp.ui.fragment.capture_image
 import android.content.ContentValues
 import android.content.Context
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
