@@ -3,6 +3,9 @@ package com.spec.cameraapp.viewmodels
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,6 +37,8 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
 
     var resizeSliderValueTrans = MutableLiveData(350f)
     var resizeSliderValueTransIsSelected = MutableLiveData(false)
+    var colorValueTransIsSelected = MutableLiveData(false)
+    var colorValueTrans = MutableLiveData(Color.Magenta)
 
     init {
         getAllProjects()
