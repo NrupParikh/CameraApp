@@ -259,6 +259,7 @@ fun ProjectItem(
                                 transformation = listOf(CircleCropTransformation()),
                                 imageSize = 84.dp,
                                 scaleType = ContentScale.Crop,
+                                roundedCornerRadius = 0.dp,
                                 blurRadius = 0.dp
                             )
 

@@ -2,10 +2,14 @@ package com.spec.cameraapp.ui.components
 
 import android.content.Context
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -25,7 +29,8 @@ fun LoadImageFromUri(
     transformation: List<Transformation>,
     imageSize: Dp,
     scaleType: ContentScale,
-    blurRadius: Dp
+    blurRadius: Dp,
+    roundedCornerRadius: Dp
 
 ) {
     val imageRequest = ImageRequest.Builder(context = context).data(
@@ -37,6 +42,9 @@ fun LoadImageFromUri(
         contentDescription = "Image Description",
         modifier = Modifier
             .size(imageSize)
+            // For Rounded Corner
+            .clip(RoundedCornerShape(roundedCornerRadius))
+            // For Blur
             .blur(blurRadius),
         contentScale = scaleType,
         placeholder = painterResource(id = R.drawable.ic_launcher_foreground)
@@ -53,6 +61,7 @@ fun PreviewLoadImageFromUriNight() {
             transformation = listOf(),
             imageSize = 48.dp,
             scaleType = ContentScale.Crop,
+            roundedCornerRadius = 0.dp,
             blurRadius = 0.dp
         )
     }
@@ -68,6 +77,7 @@ fun PreviewLoadImageFromUriLight() {
             transformation = listOf(),
             imageSize = 48.dp,
             scaleType = ContentScale.Crop,
+            roundedCornerRadius = 0.dp,
             blurRadius = 0.dp
         )
     }

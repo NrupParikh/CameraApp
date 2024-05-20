@@ -3,7 +3,6 @@ package com.spec.cameraapp.ui.fragment.image_editing
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Color
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,10 +13,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,10 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
 import coil.transform.CircleCropTransformation
-import coil.transform.RoundedCornersTransformation
 import coil.transform.Transformation
 import com.spec.cameraapp.R
 import com.spec.cameraapp.db.dao.ProjectDao
@@ -38,7 +33,6 @@ import com.spec.cameraapp.repository.ProjectRepository
 import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
 import com.spec.cameraapp.ui.theme.CameraAppTheme
-import com.spec.cameraapp.utils.transformations.BlurTransformation
 import com.spec.cameraapp.utils.transformations.ColorFilterTransformation
 import com.spec.cameraapp.utils.transformations.GrayscaleTransformation
 import com.spec.cameraapp.utils.transformations.MaskTransformation
@@ -101,8 +95,8 @@ fun ImageEditingScreen(
                 var transformation: Transformation? = null
                 val transformationValue = selectedTransformation.value
                 when (transformationValue) {
-                    TransformationType.ROUNDED_CORNER.name -> transformation =
-                        RoundedCornersTransformation(roundCornerSliderValueTrans.value!!)
+                    TransformationType.ROUNDED_CORNER.name -> transformation = null
+//                        RoundedCornersTransformation(roundCornerSliderValueTrans.value!!)
 
                     TransformationType.CIRCLE_CROP.name -> transformation =
                         CircleCropTransformation()
@@ -146,6 +140,7 @@ fun ImageEditingScreen(
                     transformation = listOfTransformations,
                     imageSize = 500.dp,
                     scaleType = ContentScale.Crop,
+                    roundedCornerRadius = roundCornerSliderValueTrans.value?.dp ?: 0.dp,
                     blurRadius = blurSliderValueTrans.value?.dp ?: 0.dp
                 )
             }
@@ -168,7 +163,7 @@ fun ImageEditingScreen(
                 Slider(
                     value = blurSliderValueTrans.value!!,
                     onValueChange = { mainViewModel.blurSliderValueTrans.value = it },
-                    valueRange = 1f..25f
+                    valueRange = 1f..100f
                 )
             }
         }
