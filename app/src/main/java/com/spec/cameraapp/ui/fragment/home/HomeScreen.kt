@@ -3,7 +3,6 @@ package com.spec.cameraapp.ui.fragment.home
 import android.content.res.Configuration
 import android.net.Uri
 import android.util.Log
-import androidx.compose.foundation.clickable
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -13,6 +12,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
@@ -60,6 +61,7 @@ import androidx.navigation.NavHostController
 import coil.transform.CircleCropTransformation
 import com.spec.cameraapp.R
 import com.spec.cameraapp.db.table.Project
+import com.spec.cameraapp.ui.components.ConfirmationDialog
 import com.spec.cameraapp.ui.components.LoadImageFromUri
 import com.spec.cameraapp.ui.components.SelectImagePopUp
 import com.spec.cameraapp.ui.fragment.capture_image.storeImagePathInDB
@@ -84,6 +86,7 @@ fun HomeScreen(
     val lazyListState = rememberLazyListState()
 
     var showDialog by remember { mutableStateOf(false) }
+    var showConfirmationDialog by remember { mutableStateOf(false) }
     var photoUri: Uri? by remember { mutableStateOf(null) }
 
     val launcher =
@@ -93,7 +96,7 @@ fun HomeScreen(
         }
     if (photoUri != null) {
 
-        val path =mainViewModel.setTempPath(photoUri!!, LocalContext.current)
+        val path = mainViewModel.setTempPath(photoUri!!, LocalContext.current)
 
         storeImagePathInDB(mainViewModel, path)
         Log.d("JBK", "HomeScreen: URL:${path}")
@@ -132,6 +135,19 @@ fun HomeScreen(
             },
         )
 
+        // Show confirmation dialog for delete project
+        ConfirmationDialog(
+            title = stringResource(id = R.string.lbl_confirmation_for_delete_project),
+            showDialog = showConfirmationDialog,
+            onDismiss = { showConfirmationDialog = false },
+            onNegativeButtonClick = {
+
+            },
+            onPositiveButtonClick = {
+
+            },
+        )
+
         // ========== Fetch Project List from Database and show on List
 
         val projectListDescending: List<Project> by mainViewModel.projectList.observeAsState(initial = listOf())
@@ -150,9 +166,9 @@ fun HomeScreen(
                     ProjectItem(
                         project = project,
                         onItemClick = { selectedProject ->
-                        mainViewModel.imageUrl.value = selectedProject.imageUrl
-                        navController.navigate(route = Route.EditImage.route)
-                    },/*
+                            mainViewModel.imageUrl.value = selectedProject.imageUrl
+                            navController.navigate(route = Route.EditImage.route)
+                        },/*
                  onEdit = {
                          selectedProject ->
                      mainViewModel.imageUrl.value = selectedProject.imageUrl
@@ -160,12 +176,15 @@ fun HomeScreen(
                      Log.d("JBK", "on Edit methode call on swap")
 
                  },*/
-                 onRemove = { it ->
-                     Log.d("JBK", "on delete remove  methode call on swap")
+                        onRemove = { it ->
+                            Log.d("JBK", "on delete remove  methode call on swap")
 
-                                    mainViewModel.deleteItem(it)
+                            mainViewModel.deleteItem(it)
+//                            showConfirmationDialog = true
 
-                 })
+                            // ToDo Open Ok Cancel dialog
+
+                        })
                 }
             }
         }
@@ -175,17 +194,17 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProjectItem(project: Project,
-                onItemClick: (Project) -> Unit,
-                onRemove: (Project) -> Unit,
-                ) {
+fun ProjectItem(
+    project: Project,
+    onItemClick: (Project) -> Unit,
+    onRemove: (Project) -> Unit,
+) {
     val context = LocalContext.current
     var show by remember { mutableStateOf(true) }
     val currentItem by rememberUpdatedState(project)
     val dismissState = rememberDismissState(
         confirmValueChange = {
-            if (it == DismissValue.DismissedToStart || it == DismissValue.DismissedToEnd)
-            {
+            if (it == DismissValue.DismissedToStart || it == DismissValue.DismissedToEnd) {
                 show = false
                 true
             } else false
@@ -212,8 +231,10 @@ fun ProjectItem(project: Project,
                                 onItemClick.invoke(project)
                             }),
                         shape = RoundedCornerShape(9.dp),
-                        border = BorderStroke(0.1.dp,
-                            MaterialTheme.colorScheme.primary)
+                        border = BorderStroke(
+                            0.1.dp,
+                            MaterialTheme.colorScheme.primary
+                        )
                     ) {
 
                         Row(
@@ -255,7 +276,9 @@ fun ProjectItem(project: Project,
                             }
                         }
                     }
-                }
+                },
+                // This will swipe only from Right to Left and prevent to swipe from Left to Right
+                directions = mutableSetOf(DismissDirection.EndToStart)
             )
         }
     }
@@ -268,56 +291,56 @@ fun ProjectItem(project: Project,
             Toast.makeText(context, "Item removed", Toast.LENGTH_SHORT).show()
         }
     }
-   /* Card(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth()
-            .clickable(onClick = {
-                onItemClick.invoke(project)
-            }),
-        shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
-    ) {
+    /* Card(
+         modifier = Modifier
+             .padding(10.dp)
+             .fillMaxWidth()
+             .clickable(onClick = {
+                 onItemClick.invoke(project)
+             }),
+         shape = RoundedCornerShape(10.dp),
+         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+         Row(
+             modifier = Modifier
+                 .fillMaxWidth()
+                 .padding(4.dp),
+             verticalAlignment = Alignment.CenterVertically
+         ) {
 
-            // ==================== LOAD IMAGE USING COIL
+             // ==================== LOAD IMAGE USING COIL
 
-            LoadImageFromUri(
-                context = LocalContext.current,
-                imageUri = project.imageUrl,
-                transformation = listOf(CircleCropTransformation()),
-                imageSize = 64.dp,
-                scaleType = ContentScale.Crop
-            )
+             LoadImageFromUri(
+                 context = LocalContext.current,
+                 imageUri = project.imageUrl,
+                 transformation = listOf(CircleCropTransformation()),
+                 imageSize = 64.dp,
+                 scaleType = ContentScale.Crop
+             )
 
-            // ========== Content
+             // ========== Content
 
-            Column {
-                Text(
-                    text = String.format(
-                        stringResource(id = R.string.lbl_project_id),
-                        project.id
-                    ),
-                    modifier = Modifier.padding(8.dp),
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = String.format(
-                        stringResource(id = R.string.lbl_created_at),
-                        project.createdAt
-                    ),
-                    modifier = Modifier.padding(8.dp),
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-    }*/
+             Column {
+                 Text(
+                     text = String.format(
+                         stringResource(id = R.string.lbl_project_id),
+                         project.id
+                     ),
+                     modifier = Modifier.padding(8.dp),
+                     fontWeight = FontWeight.Bold
+                 )
+                 Text(
+                     text = String.format(
+                         stringResource(id = R.string.lbl_created_at),
+                         project.createdAt
+                     ),
+                     modifier = Modifier.padding(8.dp),
+                     fontWeight = FontWeight.Bold
+                 )
+             }
+         }
+     }*/
 }
 
 
@@ -325,32 +348,50 @@ fun ProjectItem(project: Project,
 @Composable
 fun DismissBackground(dismissState: DismissState) {
     val color = when (dismissState.dismissDirection) {
-        DismissDirection.StartToEnd -> Color(0xFFFF1744)
-        DismissDirection.EndToStart -> Color(0xFFFF1744)
+        DismissDirection.StartToEnd -> Color.Blue
+        DismissDirection.EndToStart -> Color.Red
         null -> Color.Transparent
     }
     val direction = dismissState.dismissDirection
 
-    Row(
+    Card(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(0.dp, 0.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(0.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(9.dp),
+        border = BorderStroke(
+            0.1.dp,
+            MaterialTheme.colorScheme.primary
+        )
     ) {
-        if (direction == DismissDirection.StartToEnd) Icon(
-            Icons.Default.Delete,
-            contentDescription = "delete"
-        )
-        Spacer(modifier = Modifier)
-        if (direction == DismissDirection.EndToStart) Icon(
-            Icons.Default.Delete,
-            // make sure add baseline_archive_24 resource to drawable folder
-           // painter = painterResource(R.drawable.edit),
-            contentDescription = "delete"
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color)
+                .padding(0.dp, 0.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            if (direction == DismissDirection.StartToEnd) {
+                Icon(
+                    Icons.Default.Edit,
+                    contentDescription = "delete",
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            Spacer(modifier = Modifier)
+            if (direction == DismissDirection.EndToStart) {
+                Icon(
+                    Icons.Default.Delete,
+                    // make sure add baseline_archive_24 resource to drawable folder
+                    // painter = painterResource(R.drawable.edit),
+                    contentDescription = "delete",
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        }
     }
+
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)

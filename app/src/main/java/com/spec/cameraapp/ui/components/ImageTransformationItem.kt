@@ -36,7 +36,7 @@ import com.spec.cameraapp.utils.transformations.TransformationType
 fun ImageTransformationItem(
     transformation: TransformationItem,
     isClick:Boolean,
-    onItemClick: (TransformationItem) -> Unit
+    onItemClick: (TransformationItem,Boolean) -> Unit
 ) {
     var isClick by remember { mutableStateOf(isClick) }
     Box(
@@ -53,7 +53,7 @@ fun ImageTransformationItem(
                     isClick = !isClick
                     Log.d("JBK", "ImageTransformationItem after : ${isClick}")
 
-                    onItemClick.invoke(transformation)
+                    onItemClick.invoke(transformation,isClick)
                 }
                 .size(48.dp)
                 .background(
@@ -74,9 +74,11 @@ fun PreviewImageTransformationItemNight() {
                 id = 1, icon = R.drawable.ic_rounded_corner,
                 TransformationType.ROUNDED_CORNER.name
             ),true,
-        ) {
+            onItemClick = {
+                    selectedTransformation,isClick ->
 
-        }
+            }
+        )
     }
 }
 
@@ -90,8 +92,8 @@ fun PreviewImageTransformationItemLight() {
                 id = 1, icon = R.drawable.ic_rounded_corner,
                 TransformationType.ROUNDED_CORNER.name
             ),true,
-        ) {
-
-        }
+            onItemClick =   {
+                    selectedTransformation,isClick ->}
+        )
     }
 }

@@ -12,4 +12,7 @@
     <string name="lbl_button_open_camera">Open Camera</string>
     <string name="lbl_button_open_gallery">Open Gallery</string>
     <string name="lbl_allow_camera_permission">Allow Camera Permission For this feature</string>
+    <string name="lbl_ok">OK</string>
+    <string name="lbl_cancel">Cancel</string>
+    <string name="lbl_confirmation_for_delete_project">Are you sure you want to delete this Project?</string>
 </resources>
