@@ -35,7 +35,7 @@ import com.spec.cameraapp.repository.ProjectRepository
 import com.spec.cameraapp.ui.components.ColorPic
 import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
-import com.spec.cameraapp.ui.components.MaskCollectionDialog
+import com.spec.cameraapp.ui.components.MaskPic
 import com.spec.cameraapp.ui.theme.CameraAppTheme
 import com.spec.cameraapp.utils.transformationList
 import com.spec.cameraapp.utils.transformations.ColorFilterTransformation
@@ -125,21 +125,9 @@ fun ImageEditingScreen(
                 val transformationValue = selectedTransformation.value
                 when (transformationValue) {
                     TransformationType.ROUNDED_CORNER.name -> transformation = null
-//                        RoundedCornersTransformation(roundCornerSliderValueTrans.value!!)
-
                     TransformationType.CIRCLE_CROP.name -> transformation = null
-//                        CircleCropTransformation()
-
                     TransformationType.RESIZE_IMAGE.name -> transformation = null
-//                        SquareCropTransformation()
-
                     TransformationType.BLUR.name -> transformation = null
-//                        BlurTransformation(
-//                            context = LocalContext.current,
-//                            blurSliderValueTrans.value!!
-//                        )
-
-
                     TransformationType.GRAY_SCALE.name -> transformation =
                         GrayscaleTransformation()
 
@@ -276,14 +264,7 @@ fun ImageEditingScreen(
                     valueRange = 1f..350f
                 )
             } else if (maskValueTransIsSelected.value!!) {
-                MaskCollectionDialog(
-                    mainViewModel,
-                    showDialog = true,
-                    onDismiss = { showMaskDialog = false },
-                    onItemClick = {
-                        Log.d("TAG", "TSelected")
-                    }
-                )
+                MaskPic(mainViewModel)
 
             } else if (colorValueTransIsSelected.value!!) {
                 ColorPic(mainViewModel)

@@ -1,5 +1,6 @@
 package com.spec.cameraapp.ui.components
 
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,18 +21,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.spec.cameraapp.R
+import com.spec.cameraapp.ui.theme.CameraAppTheme
 import com.spec.cameraapp.utils.transformationList
-import com.spec.cameraapp.viewmodels.MainViewModel
 
 @Composable
 fun MaskCollectionDialog(
-    mainViewModel: MainViewModel,
     showDialog: Boolean,
     onDismiss: () -> Unit,
-    onItemClick: () -> Unit
+    onItemClick: (String) -> Unit
 
 ) {
     if (showDialog) {
@@ -73,10 +74,7 @@ fun MaskCollectionDialog(
                                 onItemClick = { selectedTransformation, isClick ->
                                     if (isClick) {
                                         Log.d("TAG", "YES")
-                                        mainViewModel.selectedMaskType.value =
-                                            transformationList[it].type
-                                        onItemClick()
-                                        onDismiss()
+                                        onItemClick(selectedTransformation.type)
                                     } else {
                                         Log.d("TAG", "NO")
                                     }
@@ -89,29 +87,19 @@ fun MaskCollectionDialog(
     }
 }
 
-//
-//@Composable
-//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-//fun PreviewMaskCollectionDialogNight() {
-//    CameraAppTheme {
-//        MaskCollectionDialog(
-//            mainViewModel = MainViewModel(projectRepository = ProjectRepository()),
-//            showDialog = true
-//        ) {
-//
-//        }
-//    }
-//}
-//
-//@Composable
-//@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
-//fun PreviewMaskCollectionDialogLight() {
-//    CameraAppTheme {
-//        MaskCollectionDialog(
-//            mainViewModel,
-//            showDialog = true
-//        ) {
-//
-//        }
-//    }
-//}
+
+@Composable
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+fun PreviewMaskCollectionDialogNight() {
+    CameraAppTheme {
+        MaskCollectionDialog(showDialog = true, onDismiss = {}, onItemClick = {})
+    }
+}
+
+@Composable
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+fun PreviewMaskCollectionDialogLight() {
+    CameraAppTheme {
+        MaskCollectionDialog(showDialog = true, onDismiss = {}, onItemClick = {})
+    }
+}

@@ -53,6 +53,7 @@ fun LoadImageFromUri(
             )
             // For Blur
             .blur(blurRadius)
+            // For Image Resize
             .size(imageSize),
         contentScale = scaleType,
         placeholder = painterResource(id = R.drawable.ic_launcher_foreground)
