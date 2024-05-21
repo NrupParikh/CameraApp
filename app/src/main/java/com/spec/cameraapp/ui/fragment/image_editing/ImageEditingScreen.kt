@@ -3,6 +3,7 @@ package com.spec.cameraapp.ui.fragment.image_editing
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Color
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,8 +15,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -31,11 +35,12 @@ import com.spec.cameraapp.db.table.Project
 import com.spec.cameraapp.repository.ProjectRepository
 import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
+import com.spec.cameraapp.ui.components.MaskCollectionDialog
 import com.spec.cameraapp.ui.theme.CameraAppTheme
+import com.spec.cameraapp.utils.transformationList
 import com.spec.cameraapp.utils.transformations.ColorFilterTransformation
 import com.spec.cameraapp.utils.transformations.GrayscaleTransformation
 import com.spec.cameraapp.utils.transformations.MaskTransformation
-import com.spec.cameraapp.utils.transformations.TransformationItem
 import com.spec.cameraapp.utils.transformations.TransformationType
 import com.spec.cameraapp.viewmodels.MainViewModel
 
@@ -50,6 +55,9 @@ fun ImageEditingScreen(
     mainViewModel: MainViewModel,
     navController: NavHostController
 ) {
+
+    var showMaskDialog by remember { mutableStateOf(false) }
+
 
     val photoUri = mainViewModel.imageUrl.observeAsState(initial = "")
     val selectedTransformation = mainViewModel.selectedTransformation.observeAsState()
@@ -70,6 +78,9 @@ fun ImageEditingScreen(
     val resizeSliderValueTrans = mainViewModel.resizeSliderValueTrans.observeAsState()
     val resizeSliderValueTransIsSelected =
         mainViewModel.resizeSliderValueTransIsSelected.observeAsState()
+
+    val maskValueTransIsSelected =
+        mainViewModel.maskValueTransIsSelected.observeAsState()
 
 //    val photoUri = "content://media/external/images/media/1000060027"
 //    val photoUri = "content://media/picker/0/com.android.providers.media.photopicker/media/1000058380"
@@ -126,8 +137,20 @@ fun ImageEditingScreen(
                             ColorUtils.setAlphaComponent(Color.MAGENTA, 80)
                         )
 
-                    TransformationType.MASK.name -> transformation =
-                        MaskTransformation(context = LocalContext.current, R.drawable.ic_splash)
+                    TransformationType.MASK.name -> {
+                        Log.d("TAG", "MTYPE ${mainViewModel.selectedMaskType.value}")
+//                        mainViewModel.selectedMaskType.value?.toInt()
+//                            ?.let { MaskTransformation(context = LocalContext.current, it) }
+////                        transformation =
+////                            mainViewModel.selectedMask.value?.toInt()?.let {
+////                                MaskTransformation(
+////                                    context = LocalContext.current,
+////                                    it
+////                                )
+////                            }
+
+
+                    }
                 }
 
                 // Adding multiple transformations
@@ -192,6 +215,16 @@ fun ImageEditingScreen(
                     onValueChange = { mainViewModel.resizeSliderValueTrans.value = it },
                     valueRange = 1f..350f
                 )
+            } else if (maskValueTransIsSelected.value!!) {
+                MaskCollectionDialog(
+                    mainViewModel,
+                    showDialog = true,
+                    onDismiss = { showMaskDialog = false },
+                    onItemClick = {
+                        Log.d("TAG","TSelected")
+                    }
+                )
+
             }
         }
         TransformationBox(mainViewModel)
@@ -203,45 +236,6 @@ fun ImageEditingScreen(
 @Composable
 fun TransformationBox(mainViewModel: MainViewModel) {
     val lazyListState = rememberLazyListState()
-
-    // List of Transformations
-    val transformationList: List<TransformationItem> = mutableListOf(
-        TransformationItem(
-            id = 1,
-            icon = R.drawable.ic_rounded_corner,
-            TransformationType.ROUNDED_CORNER.name
-        ),
-        TransformationItem(
-            id = 2,
-            icon = R.drawable.ic_circle_crop,
-            TransformationType.CIRCLE_CROP.name
-        ),
-        TransformationItem(
-            id = 3,
-            icon = R.drawable.ic_sqaure_crop,
-            TransformationType.RESIZE_IMAGE.name
-        ),
-        TransformationItem(
-            id = 4,
-            icon = R.drawable.ic_blur,
-            TransformationType.BLUR.name
-        ),
-        TransformationItem(
-            id = 5,
-            icon = R.drawable.ic_gray_scale,
-            TransformationType.GRAY_SCALE.name
-        ),
-        TransformationItem(
-            id = 6,
-            icon = R.drawable.ic_color_filter,
-            TransformationType.COLOR_FILTER.name
-        ),
-        TransformationItem(
-            id = 7,
-            icon = R.drawable.ic_mask,
-            TransformationType.MASK.name
-        ),
-    )
 
     LazyRow(
         verticalAlignment = Alignment.CenterVertically,
@@ -265,6 +259,7 @@ fun TransformationBox(mainViewModel: MainViewModel) {
                             mainViewModel.blurSliderValueTransIsSelected.value = false
                             mainViewModel.circleCropSliderValueTransIsSelected.value = false
                             mainViewModel.resizeSliderValueTransIsSelected.value = false
+                            mainViewModel.maskValueTransIsSelected.value = false
 
                         }
 
@@ -273,6 +268,7 @@ fun TransformationBox(mainViewModel: MainViewModel) {
                             mainViewModel.blurSliderValueTransIsSelected.value = false
                             mainViewModel.roundCornerSliderValueTransIsSelected.value = false
                             mainViewModel.resizeSliderValueTransIsSelected.value = false
+                            mainViewModel.maskValueTransIsSelected.value = false
                         }
 
                         TransformationType.RESIZE_IMAGE.name -> {
@@ -280,6 +276,7 @@ fun TransformationBox(mainViewModel: MainViewModel) {
                             mainViewModel.circleCropSliderValueTransIsSelected.value = false
                             mainViewModel.blurSliderValueTransIsSelected.value = false
                             mainViewModel.roundCornerSliderValueTransIsSelected.value = false
+                            mainViewModel.maskValueTransIsSelected.value = false
                         }
 
                         TransformationType.BLUR.name -> {
@@ -287,6 +284,7 @@ fun TransformationBox(mainViewModel: MainViewModel) {
                             mainViewModel.roundCornerSliderValueTransIsSelected.value = false
                             mainViewModel.circleCropSliderValueTransIsSelected.value = false
                             mainViewModel.resizeSliderValueTransIsSelected.value = false
+                            mainViewModel.maskValueTransIsSelected.value = false
 
                         }
 
@@ -299,7 +297,11 @@ fun TransformationBox(mainViewModel: MainViewModel) {
                         }
 
                         TransformationType.MASK.name -> {
-
+                            mainViewModel.maskValueTransIsSelected.value = isClick
+                            mainViewModel.blurSliderValueTransIsSelected.value = false
+                            mainViewModel.roundCornerSliderValueTransIsSelected.value = false
+                            mainViewModel.circleCropSliderValueTransIsSelected.value = false
+                            mainViewModel.resizeSliderValueTransIsSelected.value = false
                         }
                     }
                 })

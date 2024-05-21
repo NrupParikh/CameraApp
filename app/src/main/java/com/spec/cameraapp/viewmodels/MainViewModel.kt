@@ -35,6 +35,8 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
     var resizeSliderValueTrans = MutableLiveData(350f)
     var resizeSliderValueTransIsSelected = MutableLiveData(false)
 
+    var maskValueTransIsSelected = MutableLiveData(false)
+    val selectedMaskType = MutableLiveData<String>()
     init {
         getAllProjects()
     }
