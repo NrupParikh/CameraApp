@@ -30,7 +30,7 @@ val transformationList: List<TransformationItem> = mutableListOf(
     ),
     TransformationItem(
         id = 3,
-        icon = R.drawable.ic_sqaure_crop,
+        icon = R.drawable.ic_resize,
         TransformationType.RESIZE_IMAGE.name
     ),
     TransformationItem(

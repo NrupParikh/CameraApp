@@ -73,6 +73,8 @@ fun MaskCollectionDialog(
                                 onItemClick = { selectedTransformation, isClick ->
                                     if (isClick) {
                                         Log.d("TAG", "YES")
+                                        mainViewModel.selectedMaskType.value =
+                                            transformationList[it].type
                                         onItemClick()
                                         onDismiss()
                                     } else {

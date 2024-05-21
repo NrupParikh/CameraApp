@@ -2,30 +2,17 @@ package com.spec.cameraapp.ui.fragment.image_editing
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.graphics.Color
 import android.util.Log
-import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,49 +20,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.ColorUtils
-import androidx.core.graphics.component1
-import androidx.core.graphics.component2
-import androidx.core.graphics.component3
-import androidx.core.graphics.component4
-import androidx.core.graphics.red
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
-import coil.transform.CircleCropTransformation
-import coil.transform.RoundedCornersTransformation
 import coil.transform.Transformation
 import com.spec.cameraapp.R
 import com.spec.cameraapp.db.dao.ProjectDao
 import com.spec.cameraapp.db.table.Project
 import com.spec.cameraapp.repository.ProjectRepository
+import com.spec.cameraapp.ui.components.ColorPic
 import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
 import com.spec.cameraapp.ui.components.MaskCollectionDialog
 import com.spec.cameraapp.ui.theme.CameraAppTheme
 import com.spec.cameraapp.utils.transformationList
-import com.spec.cameraapp.utils.transformations.BlurTransformation
 import com.spec.cameraapp.utils.transformations.ColorFilterTransformation
 import com.spec.cameraapp.utils.transformations.GrayscaleTransformation
 import com.spec.cameraapp.utils.transformations.MaskTransformation
-import com.spec.cameraapp.utils.transformations.SquareCropTransformation
-import com.spec.cameraapp.utils.transformations.TransformationItem
 import com.spec.cameraapp.utils.transformations.TransformationType
 import com.spec.cameraapp.viewmodels.MainViewModel
-import io.mhssn.colorpicker.ColorPicker
-import io.mhssn.colorpicker.ColorPickerDialog
-import io.mhssn.colorpicker.ColorPickerType
-import io.mhssn.colorpicker.ext.toHex
-import io.mhssn.colorpicker.ext.transparentBackground
 
 /*
 *  In this Image Editing Screen we can do below functionality
@@ -95,28 +62,36 @@ fun ImageEditingScreen(
     val photoUri = mainViewModel.imageUrl.observeAsState(initial = "")
     val selectedTransformation = mainViewModel.selectedTransformation.observeAsState()
     val listOfTransformations = remember { mutableListOf<Transformation>() }
-    var roundCornerSliderValueTrans = mainViewModel.roundCornerSliderValueTrans.observeAsState()
-    var roundCornerSliderValueTransisSelected =  mainViewModel.roundCornerSliderValueTransIsSelected.observeAsState()
 
+    // ============ ROUNDED_CORNER
+    val roundCornerSliderValueTrans = mainViewModel.roundCornerSliderValueTrans.observeAsState()
+    val roundCornerSliderValueTransIsSelected =
+        mainViewModel.roundCornerSliderValueTransIsSelected.observeAsState()
 
-    val blurSliderValueTrans = mainViewModel.blurSliderValueTrans.observeAsState()
-    val blurSliderValueTransIsSelected =
-        mainViewModel.blurSliderValueTransIsSelected.observeAsState()
-
+    // ============ CIRCLE_CROP
     val circleCropSliderValueTrans = mainViewModel.circleCropSliderValueTrans.observeAsState()
     val circleCropSliderValueTransIsSelected =
         mainViewModel.circleCropSliderValueTransIsSelected.observeAsState()
 
+    // ============ RESIZE_IMAGE
     val resizeSliderValueTrans = mainViewModel.resizeSliderValueTrans.observeAsState()
     val resizeSliderValueTransIsSelected =
         mainViewModel.resizeSliderValueTransIsSelected.observeAsState()
 
-    val maskValueTransIsSelected =
-        mainViewModel.maskValueTransIsSelected.observeAsState()
+    // ============ BLUR
+    val blurSliderValueTrans = mainViewModel.blurSliderValueTrans.observeAsState()
+    val blurSliderValueTransIsSelected =
+        mainViewModel.blurSliderValueTransIsSelected.observeAsState()
 
+    // ============ COLOR_FILTER
     val colorValueTransIsSelected =
         mainViewModel.colorValueTransIsSelected.observeAsState()
     val colorValueTrans = mainViewModel.colorValueTrans.observeAsState()
+
+    // ============ MASK
+    val maskValueTransIsSelected =
+        mainViewModel.maskValueTransIsSelected.observeAsState()
+    val selectedMaskType = mainViewModel.selectedMaskType.observeAsState()
 
 //    val photoUri = "content://media/external/images/media/1000060027"
 //    val photoUri = "content://media/picker/0/com.android.providers.media.photopicker/media/1000058380"
@@ -176,22 +151,65 @@ fun ImageEditingScreen(
                                     80
                                 )
                             )
-                       // Log.d("JBK", "color value${colorValueTrans.value}")
+                        // Log.d("JBK", "color value${colorValueTrans.value}")
                     }
 
                     TransformationType.MASK.name -> {
-                        Log.d("TAG", "MTYPE ${mainViewModel.selectedMaskType.value}")
-//                        mainViewModel.selectedMaskType.value?.toInt()
-//                            ?.let { MaskTransformation(context = LocalContext.current, it) }
-////                        transformation =
-////                            mainViewModel.selectedMask.value?.toInt()?.let {
-////                                MaskTransformation(
-////                                    context = LocalContext.current,
-////                                    it
-////                                )
-////                            }
+                        Log.d("TAG", "MASK_TYPE ${selectedMaskType.value}")
 
+                        val type = selectedMaskType.value ?: ""
 
+                        // ===================== SET VECTOR IMAGE BASED ON SELECTED MASK ITEM
+                        when (type) {
+                            TransformationType.ROUNDED_CORNER.toString() -> {
+                                transformation = MaskTransformation(
+                                    context = LocalContext.current,
+                                    R.drawable.ic_rounded_corner
+                                )
+                            }
+
+                            TransformationType.CIRCLE_CROP.toString() -> {
+                                transformation = MaskTransformation(
+                                    context = LocalContext.current,
+                                    R.drawable.ic_circle_crop
+                                )
+                            }
+
+                            TransformationType.RESIZE_IMAGE.toString() -> {
+                                transformation = MaskTransformation(
+                                    context = LocalContext.current,
+                                    R.drawable.ic_resize
+                                )
+                            }
+
+                            TransformationType.BLUR.toString() -> {
+                                transformation = MaskTransformation(
+                                    context = LocalContext.current,
+                                    R.drawable.ic_blur
+                                )
+                            }
+
+                            TransformationType.GRAY_SCALE.toString() -> {
+                                transformation = MaskTransformation(
+                                    context = LocalContext.current,
+                                    R.drawable.ic_gray_scale
+                                )
+                            }
+
+                            TransformationType.COLOR_FILTER.toString() -> {
+                                transformation = MaskTransformation(
+                                    context = LocalContext.current,
+                                    R.drawable.ic_color_filter
+                                )
+                            }
+
+                            TransformationType.MASK.toString() -> {
+                                transformation = MaskTransformation(
+                                    context = LocalContext.current,
+                                    R.drawable.ic_mask
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -233,7 +251,7 @@ fun ImageEditingScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (roundCornerSliderValueTransisSelected.value!!) {
+            if (roundCornerSliderValueTransIsSelected.value!!) {
                 Slider(
                     value = roundCornerSliderValueTrans.value!!,
                     onValueChange = { mainViewModel.roundCornerSliderValueTrans.value = it },
@@ -263,12 +281,11 @@ fun ImageEditingScreen(
                     showDialog = true,
                     onDismiss = { showMaskDialog = false },
                     onItemClick = {
-                        Log.d("TAG","TSelected")
+                        Log.d("TAG", "TSelected")
                     }
                 )
 
-            }
-            else if (colorValueTransIsSelected.value!!) {
+            } else if (colorValueTransIsSelected.value!!) {
                 ColorPic(mainViewModel)
             }
         }
@@ -298,56 +315,89 @@ fun TransformationBox(mainViewModel: MainViewModel) {
                 onItemClick = { selectedTransformation, isClick ->
                     mainViewModel.selectedTransformation.value = selectedTransformation.type
                     when (selectedTransformation.type) {
+
+                        // ============ ROUNDED_CORNER
                         TransformationType.ROUNDED_CORNER.name -> {
-
-                            mainViewModel.roundCornerSliderValueTransIsSelected.value = isClick
-                            mainViewModel.blurSliderValueTransIsSelected.value = false
-                            mainViewModel.circleCropSliderValueTransIsSelected.value = false
-                            mainViewModel.resizeSliderValueTransIsSelected.value = false
-                            mainViewModel.maskValueTransIsSelected.value = false
-
+                            mainViewModel.apply {
+                                roundCornerSliderValueTransIsSelected.value = isClick
+                                circleCropSliderValueTransIsSelected.value = false
+                                resizeSliderValueTransIsSelected.value = false
+                                blurSliderValueTransIsSelected.value = false
+                                colorValueTransIsSelected.value = false
+                                maskValueTransIsSelected.value = false
+                            }
                         }
 
+                        // ============ CIRCLE_CROP
                         TransformationType.CIRCLE_CROP.name -> {
-                            mainViewModel.circleCropSliderValueTransIsSelected.value = isClick
-                            mainViewModel.blurSliderValueTransIsSelected.value = false
-                            mainViewModel.roundCornerSliderValueTransIsSelected.value = false
-                            mainViewModel.resizeSliderValueTransIsSelected.value = false
-                            mainViewModel.maskValueTransIsSelected.value = false
+                            mainViewModel.apply {
+                                roundCornerSliderValueTransIsSelected.value = false
+                                circleCropSliderValueTransIsSelected.value = isClick
+                                resizeSliderValueTransIsSelected.value = false
+                                blurSliderValueTransIsSelected.value = false
+                                colorValueTransIsSelected.value = false
+                                maskValueTransIsSelected.value = false
+                            }
                         }
 
+                        // ============ RESIZE_IMAGE
                         TransformationType.RESIZE_IMAGE.name -> {
-                            mainViewModel.resizeSliderValueTransIsSelected.value = isClick
-                            mainViewModel.circleCropSliderValueTransIsSelected.value = false
-                            mainViewModel.blurSliderValueTransIsSelected.value = false
-                            mainViewModel.roundCornerSliderValueTransIsSelected.value = false
-                            mainViewModel.maskValueTransIsSelected.value = false
+                            mainViewModel.apply {
+                                roundCornerSliderValueTransIsSelected.value = false
+                                circleCropSliderValueTransIsSelected.value = false
+                                resizeSliderValueTransIsSelected.value = isClick
+                                blurSliderValueTransIsSelected.value = false
+                                colorValueTransIsSelected.value = false
+                                maskValueTransIsSelected.value = false
+                            }
                         }
 
+                        // ============ BLUR
                         TransformationType.BLUR.name -> {
-                            mainViewModel.blurSliderValueTransIsSelected.value = isClick
-                            mainViewModel.roundCornerSliderValueTransIsSelected.value = false
-                            mainViewModel.circleCropSliderValueTransIsSelected.value = false
-                            mainViewModel.resizeSliderValueTransIsSelected.value = false
-                            mainViewModel.maskValueTransIsSelected.value = false
-
+                            mainViewModel.apply {
+                                roundCornerSliderValueTransIsSelected.value = false
+                                circleCropSliderValueTransIsSelected.value = false
+                                resizeSliderValueTransIsSelected.value = false
+                                blurSliderValueTransIsSelected.value = isClick
+                                colorValueTransIsSelected.value = false
+                                maskValueTransIsSelected.value = false
+                            }
                         }
 
+                        // ============ GRAY_SCALE
                         TransformationType.GRAY_SCALE.name -> {
-
+                            mainViewModel.apply {
+                                roundCornerSliderValueTransIsSelected.value = false
+                                circleCropSliderValueTransIsSelected.value = false
+                                resizeSliderValueTransIsSelected.value = false
+                                blurSliderValueTransIsSelected.value = false
+                                colorValueTransIsSelected.value = false
+                                maskValueTransIsSelected.value = false
+                            }
                         }
 
+                        // ============ COLOR_FILTER
                         TransformationType.COLOR_FILTER.name -> {
-                            mainViewModel.colorValueTransIsSelected.value = isClick
-
+                            mainViewModel.apply {
+                                roundCornerSliderValueTransIsSelected.value = false
+                                circleCropSliderValueTransIsSelected.value = false
+                                resizeSliderValueTransIsSelected.value = false
+                                blurSliderValueTransIsSelected.value = false
+                                colorValueTransIsSelected.value = isClick
+                                maskValueTransIsSelected.value = false
+                            }
                         }
 
+                        // ============ MASK
                         TransformationType.MASK.name -> {
-                            mainViewModel.maskValueTransIsSelected.value = isClick
-                            mainViewModel.blurSliderValueTransIsSelected.value = false
-                            mainViewModel.roundCornerSliderValueTransIsSelected.value = false
-                            mainViewModel.circleCropSliderValueTransIsSelected.value = false
-                            mainViewModel.resizeSliderValueTransIsSelected.value = false
+                            mainViewModel.apply {
+                                roundCornerSliderValueTransIsSelected.value = false
+                                circleCropSliderValueTransIsSelected.value = false
+                                resizeSliderValueTransIsSelected.value = false
+                                blurSliderValueTransIsSelected.value = false
+                                colorValueTransIsSelected.value = false
+                                maskValueTransIsSelected.value = isClick
+                            }
                         }
                     }
                 })
@@ -386,131 +436,3 @@ class ProjectDaoClass : ProjectDao {
     }
 
 }
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun ColorPic(mainViewModel: MainViewModel) {
-    val colorValueTransIsSelected =
-        mainViewModel.colorValueTransIsSelected.observeAsState()
-    val colorValueTrans = mainViewModel.colorValueTrans.observeAsState()
-    Column(
-        modifier = Modifier.padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        var color by remember { mutableStateOf(colorValueTrans.value) }
-        var colorPickerType by remember {
-            mutableStateOf<ColorPickerType>(ColorPickerType.Ring())
-        }
-        var showDialog by remember {
-            mutableStateOf(false)
-        }
-        ColorPickerDialog(
-            show = showDialog,
-            type = colorPickerType,
-            properties = DialogProperties(),
-            onDismissRequest = {
-                showDialog = false
-            },
-
-            onPickedColor = {
-                showDialog = false
-                mainViewModel.colorValueTrans.value=it
-                Log.d("JBK", "ColorPic: ${it.toHex()}")
-                Log.d("JBK", "ColorPic value: ${it.value}")
-                Log.d("JBK", "ColorPic  int: ${it.value.toInt()}")
-            },
-        )
-       /* ColorPicker(type = colorPickerType) {
-            color = it.value.toInt()
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-        ) {
-            val (alpha, red, green, blue) = color
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Hex")
-                Text(text = "#${color}")
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Alpha")
-                Text(text = alpha.toString())
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Red")
-                Text(text = red.toString())
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Green")
-                Text(text = green.toString())
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Blue")
-                Text(text = blue.toString())
-            }
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Box(
-            modifier = Modifier
-                .size(80.dp, 50.dp)
-                .clip(RoundedCornerShape(50))
-                .border(
-                    0.3.dp,
-                    SolidColor(androidx.compose.ui.graphics.Color.Red),
-                    RoundedCornerShape(50)
-                )
-                .transparentBackground(verticalBoxesAmount = 8)
-                .background(
-                    SolidColor(androidx.compose.ui.graphics.Color.Red),
-                    RoundedCornerShape(50)
-                )
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(text = "Color Picker Type",
-            )
-        Spacer(modifier = Modifier.height(20.dp))
-        LazyVerticalGrid(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            columns = GridCells.Fixed(2),
-            content = {
-                item {
-                    OutlinedButton(onClick = {
-                        colorPickerType = ColorPickerType.Classic()
-                    }, shape = RoundedCornerShape(50)) {
-                        Text(text = "Classic")
-                    }
-                }
-                item {
-                    OutlinedButton(onClick = {
-                        colorPickerType = ColorPickerType.Circle()
-                    }, shape = RoundedCornerShape(50)) {
-                        Text(text = "Circle")
-                    }
-                }
-                item {
-                    OutlinedButton(onClick = {
-                        colorPickerType = ColorPickerType.Ring()
-                    }, shape = RoundedCornerShape(50)) {
-                        Text(text = "Ring")
-                    }
-                }
-                item {
-                    OutlinedButton(onClick = {
-                        colorPickerType = ColorPickerType.SimpleRing()
-                    }, shape = RoundedCornerShape(50)) {
-                        Text(text = "Simple Ring")
-                    }
-                }
-            })*/
-        OutlinedButton(onClick = {
-            showDialog = true
-        }, shape = RoundedCornerShape(50)) {
-            Text(text = "Select Color")
-        }
-    }
-}
-

@@ -3,8 +3,6 @@ package com.spec.cameraapp.viewmodels
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,22 +24,30 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
     val imageUrl = MutableLiveData<String>()
     val selectedTransformation = MutableLiveData<String>()
 
+    // ============ ROUNDED_CORNER
     var roundCornerSliderValueTrans = MutableLiveData(0f)
     var roundCornerSliderValueTransIsSelected = MutableLiveData(false)
 
-    var blurSliderValueTrans = MutableLiveData(1f)
-    var blurSliderValueTransIsSelected = MutableLiveData(false)
-
+    // ============ CIRCLE_CROP
     var circleCropSliderValueTrans = MutableLiveData(350f)
     var circleCropSliderValueTransIsSelected = MutableLiveData(false)
 
+    // ============ RESIZE_IMAGE
     var resizeSliderValueTrans = MutableLiveData(350f)
     var resizeSliderValueTransIsSelected = MutableLiveData(false)
+
+    // ============ BLUR
+    var blurSliderValueTrans = MutableLiveData(1f)
+    var blurSliderValueTransIsSelected = MutableLiveData(false)
+
+    // ============ COLOR_FILTER
     var colorValueTransIsSelected = MutableLiveData(false)
     var colorValueTrans = MutableLiveData(Color.Magenta)
 
+    // ============ MASK
     var maskValueTransIsSelected = MutableLiveData(false)
     val selectedMaskType = MutableLiveData<String>()
+
     init {
         getAllProjects()
     }
