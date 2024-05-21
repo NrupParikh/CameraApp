@@ -42,7 +42,7 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
 
     // ============ COLOR_FILTER
     var colorValueTransIsSelected = MutableLiveData(false)
-    var colorValueTrans = MutableLiveData(Color.Magenta)
+    var colorValueTrans = MutableLiveData(Color.Transparent)
 
     // ============ MASK
     var maskValueTransIsSelected = MutableLiveData(false)
