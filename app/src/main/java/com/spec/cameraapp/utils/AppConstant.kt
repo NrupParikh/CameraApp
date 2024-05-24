@@ -9,4 +9,4 @@ const val ROUTE_HOME = "home"
 const val ROUTE_CAPTURE_IMAGE = "capture_image"
 const val ROUTE_IMAGE_EDIT = "image_edit"
 
-const val ARG_IMAGE_URI = "img_uri"
+const val MIME_TYPE_IMAGE = "image/*"

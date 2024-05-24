@@ -21,9 +21,10 @@ import com.spec.cameraapp.viewmodels.MainViewModel
 @Composable
 fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
     val navController = rememberNavController()
+
     Scaffold(
         topBar = {
-            MyTopAppBar(navController = navController)
+            MyTopAppBar(navController = navController, mainViewModel)
         },
         content = { paddingValues ->
             Box(
@@ -31,6 +32,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
             ) {
                 NavigationGraph(navController = navController, mainViewModel)
             }
-        },
+        }
     )
 }
+

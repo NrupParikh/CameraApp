@@ -1,9 +1,14 @@
 package com.spec.cameraapp.viewmodels
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +18,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileOutputStream
 import java.time.Instant
 import javax.inject.Inject
 
@@ -64,7 +70,7 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
         }
     }
 
-    suspend fun deleteProject(project: Project) {
+    private suspend fun deleteProject(project: Project) {
         viewModelScope.launch(Dispatchers.IO) {
             projectRepository.deleteProject(project)
         }
@@ -76,6 +82,7 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
         }
     }
 
+    // =================== STORE IMAGE IN CACHE DIR OF APPLICATION
     fun setTempPath(imageUri: Uri, current: Context): String {
 
         val inputStream = current.contentResolver.openInputStream(imageUri)
@@ -93,8 +100,34 @@ open class MainViewModel @Inject constructor(private val projectRepository: Proj
         return tempFile.path
     }
 
-    private fun getExtentionType(imageUri: Uri, current: Context): String {
+    private fun getExceptionType(imageUri: Uri, current: Context): String {
         val mimeType = current.contentResolver.getType(imageUri)
         return mimeType?.substringAfterLast('/') ?: "jpg"
     }
+
+    // =================== SHARE IMAGE VIA INTENT
+    fun shareImageViaIntent(context: Context, bitmap: ImageBitmap?, mimeType: String) {
+        val imageUri = bitmap?.asAndroidBitmap()?.let { getUriFromBitmap(context, it) }
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = mimeType
+            putExtra(Intent.EXTRA_STREAM, imageUri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        val shareChooserIntent = Intent.createChooser(shareIntent, "Share with")
+        context.startActivity(shareChooserIntent)
+    }
+
+
+    // =================== GET URI FROM BITMAP
+    private fun getUriFromBitmap(context: Context, bitmap: Bitmap): Uri {
+        val cacheDir = context.cacheDir
+        val fileName = "${System.currentTimeMillis()}.jpg"
+        val file = File(cacheDir, fileName)
+        val outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        outputStream.flush()
+        outputStream.close()
+        return file.toUri()
+    }
+
 }

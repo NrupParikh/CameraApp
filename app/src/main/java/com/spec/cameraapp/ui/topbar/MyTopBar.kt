@@ -1,10 +1,8 @@
 package com.spec.cameraapp.ui.topbar
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,15 +15,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import com.spec.cameraapp.db.dao.ProjectDao
+import com.spec.cameraapp.db.table.Project
+import com.spec.cameraapp.repository.ProjectRepository
 import com.spec.cameraapp.ui.components.currentRoute
 import com.spec.cameraapp.ui.navigation.Route
 import com.spec.cameraapp.ui.theme.CameraAppTheme
-import com.spec.cameraapp.utils.ROUTE_IMAGE_EDIT
 import com.spec.cameraapp.utils.getScreenNameFromRoute
+import com.spec.cameraapp.viewmodels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(navController: NavController ) {
+fun MyTopAppBar(navController: NavController, mainViewModel: MainViewModel) {
 
     val currentRoute = currentRoute(navController = navController)
 
@@ -55,11 +56,7 @@ fun MyTopAppBar(navController: NavController ) {
                     )
                 }
             }
-        },
-
-
-
-
+        }
     )
 
 }
@@ -68,7 +65,10 @@ fun MyTopAppBar(navController: NavController ) {
 @Composable
 fun PreviewMyTopAppBarNight() {
     CameraAppTheme {
-        MyTopAppBar(navController = NavController(LocalContext.current))
+        MyTopAppBar(
+            navController = NavController(LocalContext.current),
+            mainViewModel = MainViewModel(projectRepository = ProjectRepository(projectDao = ProjectDaoClass()))
+        )
     }
 
 }
@@ -77,6 +77,26 @@ fun PreviewMyTopAppBarNight() {
 @Composable
 fun PreviewMyTopAppBarLight() {
     CameraAppTheme {
-        MyTopAppBar(navController = NavController(LocalContext.current))
+        MyTopAppBar(
+            navController = NavController(LocalContext.current),
+            mainViewModel = MainViewModel(projectRepository = ProjectRepository(projectDao = ProjectDaoClass()))
+        )
+
     }
+}
+
+// Preview Only Impl class
+class ProjectDaoClass : ProjectDao {
+    override suspend fun createNewProject(project: Project) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllProjects(): List<Project> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteProject(project: Project) {
+        TODO("Not yet implemented")
+    }
+
 }

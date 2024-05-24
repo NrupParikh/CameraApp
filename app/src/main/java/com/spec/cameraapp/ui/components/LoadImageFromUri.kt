@@ -2,7 +2,6 @@ package com.spec.cameraapp.ui.components
 
 import android.content.Context
 import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -39,6 +37,7 @@ fun LoadImageFromUri(
         imageUri
     )
 
+
     AsyncImage(
         model = imageRequest.transformations(transformation.toList()).build(),
         contentDescription = "Image Description",
@@ -56,7 +55,15 @@ fun LoadImageFromUri(
             // For Image Resize
             .size(imageSize),
         contentScale = scaleType,
-        placeholder = painterResource(id = R.drawable.ic_launcher_foreground)
+        placeholder = painterResource(id = R.drawable.ic_launcher_foreground),
+        fallback = painterResource(id = R.drawable.ic_launcher_foreground),
+        onSuccess = {
+            it.painter
+        },
+        onLoading = {
+
+        },
+        onError = {}
     )
 }
 

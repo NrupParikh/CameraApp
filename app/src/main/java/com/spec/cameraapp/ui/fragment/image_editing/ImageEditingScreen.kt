@@ -2,27 +2,36 @@ package com.spec.cameraapp.ui.fragment.image_editing
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
@@ -36,6 +45,9 @@ import com.spec.cameraapp.ui.components.ColorPic
 import com.spec.cameraapp.ui.components.ImageTransformationItem
 import com.spec.cameraapp.ui.components.LoadImageFromUri
 import com.spec.cameraapp.ui.components.MaskPic
+import com.spec.cameraapp.ui.components.PreviewDialog
+import com.spec.cameraapp.ui.components.screenshots.capturable
+import com.spec.cameraapp.ui.components.screenshots.rememberCaptureController
 import com.spec.cameraapp.ui.theme.CameraAppTheme
 import com.spec.cameraapp.utils.transformationList
 import com.spec.cameraapp.utils.transformations.ColorFilterTransformation
@@ -43,21 +55,22 @@ import com.spec.cameraapp.utils.transformations.GrayscaleTransformation
 import com.spec.cameraapp.utils.transformations.MaskTransformation
 import com.spec.cameraapp.utils.transformations.TransformationType
 import com.spec.cameraapp.viewmodels.MainViewModel
+import kotlinx.coroutines.launch
 
 /*
 *  In this Image Editing Screen we can do below functionality
 *   - Display Captured Image or selected image
 *   - Perform filtering
+//    val photoUri = "content://media/external/images/media/1000060027"
+//    val photoUri = "content://media/picker/0/com.android.providers.media.photopicker/media/1000058380"
 * */
 
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalComposeApi::class)
 @Composable
 fun ImageEditingScreen(
     mainViewModel: MainViewModel,
     navController: NavHostController
 ) {
-
-    var showMaskDialog by remember { mutableStateOf(false) }
-
 
     val photoUri = mainViewModel.imageUrl.observeAsState(initial = "")
     val selectedTransformation = mainViewModel.selectedTransformation.observeAsState()
@@ -93,8 +106,14 @@ fun ImageEditingScreen(
         mainViewModel.maskValueTransIsSelected.observeAsState()
     val selectedMaskType = mainViewModel.selectedMaskType.observeAsState()
 
-//    val photoUri = "content://media/external/images/media/1000060027"
-//    val photoUri = "content://media/picker/0/com.android.providers.media.photopicker/media/1000058380"
+    // ========================= CAPTURE SS OF COMPOSABLE (Save Image)
+
+    val captureController = rememberCaptureController()
+    val scope = rememberCoroutineScope()
+    var ssBitmap: ImageBitmap? by remember { mutableStateOf(null) }
+
+
+    var showPreviewDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -103,13 +122,47 @@ fun ImageEditingScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        // transformation = RoundedCornersTransformation(50f),
-        // transformation = CircleCropTransformation(), // Also adjust the imageSize
-        // transformation = SquareCropTransformation(),
-        // transformation = BlurTransformation(context = LocalContext.current, 20f),
-        // transformation = GrayscaleTransformation(),
-        // transformation = ColorFilterTransformation(ColorUtils.setAlphaComponent(Color.GREEN,50)),
-        // transformation = MaskTransformation(context = LocalContext.current,R.drawable.ic_splash)
+        // ========================= GETTING BITMAP OF OUR TRANSFORMED IMAGE COMPOSABLE COMPONENT
+        Button(onClick = {
+            scope.launch {
+                val bitmapAsync = captureController.captureAsync(Bitmap.Config.ARGB_8888)
+                try {
+                    ssBitmap = bitmapAsync.await()
+                    showPreviewDialog = true
+                } catch (error: Throwable) {
+                    Log.d("TAG", error.message.toString())
+                }
+            }
+        }) {
+            Text(text = stringResource(id = R.string.lbl_preview))
+        }
+
+//        ssBitmap?.let { imageBitmap ->
+//            Image(
+//                bitmap = imageBitmap,
+//                contentDescription = "Screenshot"
+//            )
+//            mainViewModel.shareImageViaIntent(LocalContext.current,imageBitmap, MIME_TYPE_IMAGE)
+//            showPreviewDialog = true
+//
+//        }
+
+        // ========================= SHOWING TRANSFORMED IMAGE IN PREVIEW DIALOG TO SHARE
+
+        ssBitmap?.let {
+            PreviewDialog(
+                imageBitmap = it,
+                showDialog = showPreviewDialog,
+                onDismiss = { showPreviewDialog = false },
+                onPositiveButtonClick = {
+                    // ToDo Open Share Intent
+                },
+            )
+        }
+
+
+        // ==================================================
+
 
         Box(
             modifier = Modifier.weight(1f)
@@ -212,23 +265,30 @@ fun ImageEditingScreen(
                         listOfTransformations.add(it)*/
                 }
 
-                LoadImageFromUri(
-                    context = LocalContext.current,
-                    imageUri = photoUri.value,
-                    transformation = listOfTransformations,
-                    imageSize =
-                    if (circleCropSliderValueTransIsSelected.value == true) {
-                        circleCropSliderValueTrans.value?.dp ?: 350.dp
-                    } else if (resizeSliderValueTransIsSelected.value == true) {
-                        resizeSliderValueTrans.value?.dp ?: 350.dp
-                    } else {
-                        350.dp
-                    },
-                    scaleType = ContentScale.Crop,
-                    roundedCornerRadius = roundCornerSliderValueTrans.value?.dp ?: 0.dp,
-                    blurRadius = blurSliderValueTrans.value?.dp ?: 0.dp,
-                    isCircleShape = circleCropSliderValueTransIsSelected.value == true
-                )
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.capturable(captureController)
+                ) {
+                    LoadImageFromUri(
+                        context = LocalContext.current,
+                        imageUri = photoUri.value,
+                        transformation = listOfTransformations,
+                        imageSize =
+                        if (circleCropSliderValueTransIsSelected.value == true) {
+                            circleCropSliderValueTrans.value?.dp ?: 350.dp
+                        } else if (resizeSliderValueTransIsSelected.value == true) {
+                            resizeSliderValueTrans.value?.dp ?: 350.dp
+                        } else {
+                            350.dp
+                        },
+                        scaleType = ContentScale.Crop,
+                        roundedCornerRadius = roundCornerSliderValueTrans.value?.dp ?: 0.dp,
+                        blurRadius = blurSliderValueTrans.value?.dp ?: 0.dp,
+                        isCircleShape = circleCropSliderValueTransIsSelected.value == true
+                    )
+                }
+
             }
         }
 
@@ -274,6 +334,7 @@ fun ImageEditingScreen(
     }
 }
 
+// ========================= BOTTOM OPTIONS FOR TRANSFORMATIONS
 
 @SuppressLint("LogNotTimber")
 @Composable
@@ -417,3 +478,13 @@ class ProjectDaoClass : ProjectDao {
     }
 
 }
+
+/*
+*    // transformation = RoundedCornersTransformation(50f),
+        // transformation = CircleCropTransformation(), // Also adjust the imageSize
+        // transformation = SquareCropTransformation(),
+        // transformation = BlurTransformation(context = LocalContext.current, 20f),
+        // transformation = GrayscaleTransformation(),
+        // transformation = ColorFilterTransformation(ColorUtils.setAlphaComponent(Color.GREEN,50)),
+        // transformation = MaskTransformation(context = LocalContext.current,R.drawable.ic_splash)
+* */
